@@ -36,6 +36,7 @@ uint8_t logic_pac_add = 1;
 extern wl_typedef       wl;
 extern revicer_typedef  revicer;
 extern task_tcb_typedef card_task;
+extern u8 txbuf[52];
 /* Private functions ---------------------------------------------------------*/
 
 const static serial_cmd_typedef cmd_list[] = {
@@ -223,7 +224,19 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 	if(rd_wr == 1)
 		si24r2e_read_nvm();
 	else
+	{
+		uint16_t speed;
+		char    *p_cmd_str = cJSON_GetObjectItem(object, "speed")->valuestring;
+		speed = atoi(p_cmd_str);
+		switch(speed)
+		{
+			case 1000:txbuf[0x0E] = txbuf[0x0E] & 0xC7;break;
+			case 2000:txbuf[0x0E] = txbuf[0x0E] & 0xC7; txbuf[0x0E] |= 0x08;break;
+			case 250 :txbuf[0x0E] = txbuf[0x0E] & 0xC7; txbuf[0x0E] |= 0x20;break;
+			default:break;
+		}
 		si24r2e_write_nvm();
+	}
 }
 
 /**************************************END OF FILE****************************/

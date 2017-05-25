@@ -411,7 +411,76 @@ void si24r2e_read_nvm( void )
 	{
 		SPI_NRF_ReadReg(0xC0+i);
 		tep = SPI_NRF_ReadReg(0x15); 
-		printf("addr :%02d data:%02x \r\n",i,tep); 
+		//printf("addr :%02d data:%02x \r\n",i,tep);
+		switch(i)
+		{
+			case 0x0E:  /* 发送功率和速率 */
+			{
+				int8_t tx_power = 0;
+				uint16_t speed = 0;
+				switch(tep & 0x07)
+				{
+					case 0: tx_power = -12; break;
+					case 1: tx_power = -6;  break;
+					case 2: tx_power = -4;  break;
+					case 3: tx_power = 0;   break;
+					case 4: tx_power = 1;   break;
+					case 5: tx_power = 3;   break;
+					case 6: tx_power = 4;   break;
+					case 7: tx_power = 7;   break;
+					default:                break;
+				}
+				printf("发送功率：%d dBm\r\n",tx_power);
+				switch((tep & 0x28)>>3)
+				{
+					case 0: speed = 1000; break;
+					case 1: speed = 2000; break;
+					case 4: speed = 250;  break;
+					default:              break;
+				}
+				printf("发送速率：%d kbps \r\n",speed);
+			}
+			break;
+
+			case 0x01:
+				printf( "信道：%d\r\n",tep & 0x7F );
+			break;
+
+			case 0x2:
+				printf( "兼容模式：%s\r\n",(tep & 0x7F)?"普通模式":"兼容模式");
+			break;
+
+			case 0x07:
+				printf( "数据长度：%d\r\n",tep & 0x3F );
+			break;
+
+			case 0x00:
+				printf( "CRC状态：%s\r\n",(tep & 0x40) ? "开启":"关闭");
+				printf( "CRC长度：%d\r\n",(tep & 0x20) ? 2:1);
+			break;
+
+			case 0x0D:
+				printf( "动态负载：%s\r\n",(tep & 0x04) ? "开启":"关闭");
+				printf( "地址长度：%d\r\n",(tep & 0x03) ? (tep & 0x03)+2:0);
+			break;
+
+			case 0x08: printf( "TX_ADDR：%02X" ,tep);	break;
+			case 0x09: printf( "%02X",tep);			      break;
+			case 0x0A: printf( "%02X",tep);						break;
+			case 0x0B: printf( "%02X",tep);						break;
+			case 0x0C: printf( "%02X\r\n",tep);						break;
+
+			case 0x14: printf( "TX_DATA：%02X" ,tep);	break;
+			case 0x15:
+			case 0x16:
+			case 0x17:
+			case 0x18:
+			case 0x19:
+			case 0x1A: printf( " %02X" ,tep);	break;
+
+			default:
+				break;
+		}
 	}
 	delay(25);
 
