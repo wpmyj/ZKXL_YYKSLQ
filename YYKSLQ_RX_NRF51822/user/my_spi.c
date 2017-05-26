@@ -71,8 +71,8 @@ void spi_data_handler(uint8_t *p_src, uint8_t len)
 
 void spis_event_handler(nrf_drv_spis_event_t event)
 {
-    if (event.evt_type == NRF_DRV_SPIS_XFER_DONE)
-    { 
+	if (event.evt_type == NRF_DRV_SPIS_XFER_DONE)
+	{ 
 		spi_status = 0;
 		spi_data_handler(m_rx_buf, event.rx_amount);
 		
@@ -83,7 +83,7 @@ void spis_event_handler(nrf_drv_spis_event_t event)
 			spi_slave_tx_buffers_init(m_tx_buf, tx_data_len);
 		}
 		nrf_drv_spis_buffers_set(&spis,m_tx_buf,TX_BUF_SIZE,m_rx_buf,RX_BUF_SIZE);
-    }
+  }
 }
 
 
