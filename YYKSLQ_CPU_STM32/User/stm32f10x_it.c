@@ -338,8 +338,6 @@ void NRF1_RFIRQ_EXTI_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(NRF1_EXTI_LINE_RFIRQ) != RESET)
 	{
-		EXTI_ClearITPendingBit(NRF1_EXTI_LINE_RFIRQ);
-
 		/* 读取数据 */
 		spi_read_tx_payload(SPI1, &nrf_data.rlen, nrf_data.rbuf);
 //	{
@@ -352,18 +350,10 @@ void NRF1_RFIRQ_EXTI_IRQHandler(void)
 //		printf("\r\n");
 //	}
 		/* 进行 UID 校验,判断是否发送给自己的数据 */
-		if((*(nrf_data.rbuf+1) == revicer.uid[0] &&
-			  *(nrf_data.rbuf+2) == revicer.uid[1] &&
-				*(nrf_data.rbuf+3) == revicer.uid[2] &&
-				*(nrf_data.rbuf+4) == revicer.uid[3]) ||
-		   (*(nrf_data.rbuf+1) == 0x00 &&
-			  *(nrf_data.rbuf+2) == 0x00 &&
-				*(nrf_data.rbuf+3) == 0x00 &&
-				*(nrf_data.rbuf+4) == 0x00 ))
 		{
 			if(BUF_FULL != buffer_get_buffer_status(SPI_RBUF))
 			{
-				spi_write_data_to_buffer(SPI_RBUF,nrf_data.rbuf);
+				spi_wr_buffer( SPI_RBUF, nrf_data.rbuf, nrf_data.rlen );
 			}
 			else
 			{
@@ -371,7 +361,7 @@ void NRF1_RFIRQ_EXTI_IRQHandler(void)
 			}
 		}
 	}
-	ledToggle(LBLUE);
+	EXTI_ClearITPendingBit(NRF1_EXTI_LINE_RFIRQ);
 }
 
 /**

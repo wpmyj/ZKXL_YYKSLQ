@@ -97,8 +97,6 @@ uint8_t clicker_config_default_set( void )
 	clicker_set.N_24G_ATTEND = *(uint8_t *)(&data);
 
 	/* 设置设置接收器的信道 */
-	status = spi_set_cpu_rx_signal_ch(clicker_set.N_CH_TX);
-
 	return status;
 }
 

@@ -179,25 +179,23 @@ static void update_bottom( uint8_t sel, uint16_t Len )
   Return:
   Others:None
 ******************************************************************************/
-void spi_write_data_to_buffer( uint8_t sel, uint8_t SpiMessage[] )
+void spi_wr_buffer( uint8_t sel, uint8_t *pbuf, uint16_t len )
 {
-	uint16_t AckTableLen,DataLen,Len, i;
-	uint8_t *pdata;
+	uint8_t  *pdata = pbuf;
+	uint16_t i;
+	uint8_t  pack_len = len % 256;
 
-	AckTableLen = SpiMessage[14];
-	DataLen     = SpiMessage[14+AckTableLen+2];
-	Len         = AckTableLen + DataLen + 18;
-	pdata       = SpiMessage;
-
-	//printf("writebuf:");
-	for(i=0;i<Len;i++)
+  set(sel,top[sel]+0,0x5C);
+	set(sel,top[sel]+1,pack_len);
+	for(i=1;i<len+1;i++)
 	{
-		set(sel,top[sel]+i,*pdata);
+		set(sel,top[sel]+1+i,*pdata);
 		//printf(" %02x",*pdata);
 		pdata++;
 	}
+	set(sel,top[sel]+len+2,0xCA);
 
-	update_top( sel, Len);
+	update_top( sel, len+3);
 	update_write_status(sel);
 }
 
@@ -209,29 +207,34 @@ void spi_write_data_to_buffer( uint8_t sel, uint8_t SpiMessage[] )
   Return:
   Others:None
 ******************************************************************************/
-void spi_read_data_from_buffer( uint8_t sel, uint8_t SpiMessage[] )
+uint16_t spi_rd_buffer( uint8_t sel, uint8_t *rbuf)
 {
 	uint16_t i;
-	uint16_t AckTableLen = get( sel,bottom[sel] + 14);
-	uint16_t DataLen     = get( sel,bottom[sel] + 14 + AckTableLen + 2);
-	uint16_t Len         = AckTableLen + DataLen + 18;
+	uint8_t skip = 0;
+	uint8_t header = 0;
+	uint16_t DataLen = 0;
 	uint8_t *pdata;
 
-	pdata = SpiMessage;
-	//printf("readbuf :");
-	for(i=0;i<Len;i++)
+	pdata = rbuf;
+	
+	while( header != 0x5C )
 	{
-		*pdata = get(sel,bottom[sel]+i);
+		header = get(sel,bottom[sel]+skip);
+		skip++;
+	}
+
+	DataLen = get(sel,bottom[sel]+skip);
+	for(i=0;i<DataLen;i++)
+	{
+		*pdata = get(sel,bottom[sel]+i+skip+1);
 		//printf(" %02x",*pdata);
 		pdata++;
 	}
-	//printf("\r\n");
-	
-	SpiMessage[14] = AckTableLen;
-	SpiMessage[14 + AckTableLen + 2] = DataLen;
 
-	update_bottom(sel, Len);
+	update_bottom(sel, DataLen + skip + 2);
 	update_read_status(sel);
+
+	return DataLen;
 }
 
 /******************************************************************************

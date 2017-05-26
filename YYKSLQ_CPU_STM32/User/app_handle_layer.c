@@ -33,5 +33,4 @@ void app_handle_layer(void)
 
 	/* MI Card processing process */
 	App_card_process();
-
 }

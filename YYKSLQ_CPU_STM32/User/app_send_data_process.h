@@ -5,7 +5,7 @@
 #include "app_show_message_process.h"
 
 //#define OPEN_BUFFER_ACK_SHOW
-//#define OPEN_BUFFER_DATA_SHOW
+#define OPEN_BUFFER_DATA_SHOW
 //#define OPEN_ACK_TABLE_SHOW
 
 /* 打印信息控制 */
@@ -63,9 +63,5 @@ typedef struct
 extern task_tcb_typedef send_data_task;
 extern volatile send_data_process_tcb_tydef send_data_process_tcb;
 
-void set_send_data_status( uint8_t new_status );
-uint8_t get_send_data_status( void );
-void send_data_process_timer_init( void );
-void App_retransmit_data( uint8_t is_new_pack );
 void App_clickers_send_data_process( void );
 #endif
