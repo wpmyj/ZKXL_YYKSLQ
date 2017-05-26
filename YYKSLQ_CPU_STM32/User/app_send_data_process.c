@@ -24,8 +24,9 @@ void App_clickers_send_data_process( void )
 
 	memset(spi_message,0,255);
 	pack_len = spi_rd_buffer( SPI_RBUF, spi_message );
-	printf("read_buf:");
-	for(i=0;i<pack_len;i++)
+	printf("rssi = -%03d ",spi_message[0]);
+	printf("data_buf: ");
+	for(i=1;i<pack_len;i++)
 		printf(" %02x",spi_message[i]);
 	printf("\r\n");
 	

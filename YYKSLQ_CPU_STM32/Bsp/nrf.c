@@ -23,9 +23,11 @@ extern uint16_t            list_tcb_table[UID_LIST_TABLE_SUM][WHITE_TABLE_LEN];
 extern wl_typedef          wl;
 extern revicer_typedef     revicer;
 
-u8 txbuf[52] ={0x74,0x00,0xc0,0x8d,0x05,0xdc,0x02,0x07,0xe7,0xe7,
-							 0xe7,0xe7,0xe7,0xef,0x0b,0x01,0x07,0x33,0x34,0xa9};
- 
+u8 txbuf[52] ={0x74,0x51,0xc0,0x8d,0x05,0xdc,0x02,0x08,0x10,0x20,
+							 0x30,0x40,0x50,0xef,0x03,0x01,0x07,0x33,0x34,0xa9};
+
+u8 txdata[52]={0x00,0x00,0x00,0x66,0x55,0x44,0x00,0x07};
+
 u8 txbuf1[52]={0xFD,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
 							 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 
@@ -476,7 +478,8 @@ void si24r2e_read_nvm( void )
 			case 0x17:
 			case 0x18:
 			case 0x19:
-			case 0x1A: printf( " %02X" ,tep);	break;
+			case 0x1A:
+			case 0x1B: printf( " %02X" ,tep);	break;
 
 			default:
 				break;
@@ -560,10 +563,11 @@ void pre_wr_data()
 	delay(650);
 }
 
-void wr_data(char mode,char data_in)
+void wr_data(char mode,uint8_t *pbuf)
 {
 	int tep;
 	int i;
+	uint8_t *pdata = pbuf;
 	
 	NRF2_CSN_HIGH();		
 	delay(25);
@@ -587,12 +591,12 @@ void wr_data(char mode,char data_in)
 	{
 		if(i>19) 
 		{
-			txbuf[i]  = data_in;
-			txbuf1[i] = data_in;
+			txbuf[i]  = *pdata;
+			pdata++;
 		}	
 		if(mode)
 		{
-		 SPI_NRF_WriteReg((0x80 + (i & 0x3F)),txbuf1[i]);
+		 SPI_NRF_WriteReg((0x80 + (i & 0x3F)),txbuf[i]);
 		}
 		else SPI_NRF_WriteReg((0x80 + (i & 0x3F)),txbuf[i]);
 		delay(65);		
@@ -623,7 +627,7 @@ void si24r2e_write_nvm( void )
 	}
 	else 	
 		printf("lock \r\n"); 
-	wr_data(0,0x77);
+	wr_data(0,txdata);
 }
 
 /**************************************END OF FILE****************************/

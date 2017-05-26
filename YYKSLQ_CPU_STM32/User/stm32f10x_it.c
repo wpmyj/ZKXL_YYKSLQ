@@ -22,8 +22,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "app_send_data_process.h"
-#include "app_serial_cmd_process.h"
+#include "ringbuffer.h"
 #include <stdio.h>  
 #include <stdlib.h>  
 #include "cJSON.h"
@@ -340,24 +339,20 @@ void NRF1_RFIRQ_EXTI_IRQHandler(void)
 	{
 		/* 读取数据 */
 		spi_read_tx_payload(SPI1, &nrf_data.rlen, nrf_data.rbuf);
-//	{
-//		uint8_t i;
-//		printf("irqrevicebuf:");
-//		for(i=0;i<nrf_data.rlen;i++)
 //		{
-//			printf(" %02x",nrf_data.rbuf[i]);
+//			uint8_t i;
+//			printf("irqrevicebuf:");
+//			for(i=0;i<nrf_data.rlen;i++)
+//			{
+//				printf(" %02x",nrf_data.rbuf[i]);
+//			}
+//			printf("\r\n");
 //		}
-//		printf("\r\n");
-//	}
 		/* 进行 UID 校验,判断是否发送给自己的数据 */
 		{
 			if(BUF_FULL != buffer_get_buffer_status(SPI_RBUF))
 			{
 				spi_wr_buffer( SPI_RBUF, nrf_data.rbuf, nrf_data.rlen );
-			}
-			else
-			{
-				DEBUG_BUFFER_ACK_LOG("spi irq buffer full \r\n");
 			}
 		}
 	}

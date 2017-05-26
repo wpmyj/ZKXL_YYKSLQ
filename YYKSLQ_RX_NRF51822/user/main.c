@@ -21,7 +21,7 @@
 #define PACKET_LENGTH_FIELD_SIZE    (0UL)  /**< Packet length field size in bits. */
 
 #define PACKET_BASE_ADDRESS_LENGTH  (4UL)  //!< Packet base address length field size in bytes
-#define PACKET_STATIC_LENGTH        (7UL)  //!< Packet static length in bytes
+#define PACKET_STATIC_LENGTH        (8UL)  //!< Packet static length in bytes
 #define PACKET_PAYLOAD_MAXSIZE      (32UL) //!< Packet payload maximum size in bytes
 
 //static uint32_t                      packet[PACKET_PAYLOAD_MAXSIZE/4];              /**< Packet to transmit. */
@@ -59,22 +59,22 @@ void radio_configure()
 {
 	// Radio config
 	NRF_RADIO->TXPOWER   = (RADIO_TXPOWER_TXPOWER_0dBm << RADIO_TXPOWER_TXPOWER_Pos);
-	NRF_RADIO->FREQUENCY = 0UL;  // Frequency bin 0, 2400 MHz
-	NRF_RADIO->MODE      = (RADIO_MODE_MODE_Nrf_2Mbit << RADIO_MODE_MODE_Pos);
+	NRF_RADIO->FREQUENCY = 0x51;  // Frequency bin 0, 2400 MHz
+	NRF_RADIO->MODE      = (RADIO_MODE_MODE_Nrf_1Mbit << RADIO_MODE_MODE_Pos);
 
 	// Radio address config
 	NRF_RADIO->PREFIX0 = 
 			((uint32_t)swap_bits(0xC5) << 24) // Prefix byte of address 3 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC4) << 16) // Prefix byte of address 2 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC3) << 8)  // Prefix byte of address 1 converted to nRF24L series format
-		| ((uint32_t)swap_bits(0xE7) << 0); // Prefix byte of address 0 converted to nRF24L series format
+		| ((uint32_t)swap_bits(0x10) << 0); // Prefix byte of address 0 converted to nRF24L series format
 
 	NRF_RADIO->PREFIX1 = 
 			((uint32_t)swap_bits(0xC8) << 24) // Prefix byte of address 7 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC7) << 16) // Prefix byte of address 6 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC6) << 0); // Prefix byte of address 4 converted to nRF24L series format
 
-	NRF_RADIO->BASE0 = bytewise_bitswap(0xE7E7E7E7UL);  // Base address for prefix 0 converted to nRF24L series format
+	NRF_RADIO->BASE0 = bytewise_bitswap(0x20304050UL);  // Base address for prefix 0 converted to nRF24L series format
 	NRF_RADIO->BASE1 = bytewise_bitswap(0xC2C2C2C2UL);  // Base address for prefix 1-7 converted to nRF24L series format
 
   NRF_RADIO->TXADDRESS   = 0x00UL;  // Set device address 0 to use when transmitting
