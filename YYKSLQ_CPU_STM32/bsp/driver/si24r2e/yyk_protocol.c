@@ -28,16 +28,49 @@ static const yyk_pro_tyedef zkxl_yyk_pro =
 	}
 };
 
+static const yyk_pro_tyedef jxyd_yyk_pro = 
+{
+	"江西移动",
+	{
+		18,                                                     // tx_ch
+		250,                                                    // speed
+		0,                                                      // tx_power
+		4,                                                      // addr_len
+		{ 0x33, 0x20, 0x0d, 0x54 },                             // address
+		10,                                                     // data_len
+		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
+		1100                                                    // send_delay
+	}
+};
+
+static const yyk_pro_tyedef cqyd_yyk_pro = 
+{
+	"重庆移动",
+	{
+		18,                                                     // tx_ch
+		250,                                                    // speed
+		0,                                                      // tx_power
+		4,                                                      // addr_len
+		{ 0x34, 0x12, 0xbb, 0xAA },                             // address
+		8,                                                      // data_len
+		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
+		1100                                                    // send_delay
+	}
+};
+
+
 yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM] = 
 {
 	(yyk_pro_tyedef *)&zkxl_yyk_pro,
+	(yyk_pro_tyedef *)&jxyd_yyk_pro,
+	(yyk_pro_tyedef *)&cqyd_yyk_pro,
 	NULL,
 };
 
 int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol )
 {
 	/* 打印协议名 */
-	printf("pro_name:%s",pprotocol->name);
+	printf("PROTOCOL NAME: %s",pprotocol->name);
 	/* 同步信道 */
 	if(pprotocol->conf.tx_ch < 127)
 		txbuf[NVM_RF_CHA] = (txbuf[NVM_RF_CHA] & 0x80) | pprotocol->conf.tx_ch; 
@@ -126,6 +159,3 @@ int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol )
 
 	return 0;
 }
-
-
-

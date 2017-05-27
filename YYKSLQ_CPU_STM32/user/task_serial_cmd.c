@@ -219,6 +219,8 @@ void serial_cmd_get_device_info(const cJSON *object)
 
 void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 {
+	int8_t result = 0;
+	uint8_t pro_index = 0;
 	char    *p_cmd_str  = cJSON_GetObjectItem(object, "rd_wr")->valuestring;
 	uint8_t rd_wr = atoi(p_cmd_str);
 	
@@ -226,8 +228,26 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 		si24r2e_read_nvm();
 	else
 	{
-		yyk_protocol_update(yyk_pro_list[YYK_ZKXL_PROTOCOL]);
+		p_cmd_str = cJSON_GetObjectItem(object, "pro_index")->valuestring;
+		pro_index = atoi(p_cmd_str);
+		if( pro_index <= 13 )
+		{
+			yyk_protocol_update(yyk_pro_list[pro_index]);
+			result = 0;
+		}
+		else
+		{
+			yyk_protocol_update(yyk_pro_list[YYK_ZKXL_PROTOCOL]);
+			pro_index = 0;
+			result = -1;
+		}
 		si24r2e_write_nvm();
 	}
+
+	b_print("{\r\n");
+	b_print("  \"fun\": \"si24r2e_rd_wr_nvm\",\r\n");
+	b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[pro_index]->name);
+	b_print("  \"result\": \"%d\"\r\n",result);
+	b_print("}\r\n");
 }
 /**************************************END OF FILE****************************/
