@@ -67,14 +67,14 @@ void radio_configure()
 			((uint32_t)swap_bits(0xC5) << 24) // Prefix byte of address 3 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC4) << 16) // Prefix byte of address 2 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC3) << 8)  // Prefix byte of address 1 converted to nRF24L series format
-		| ((uint32_t)swap_bits(0x10) << 0); // Prefix byte of address 0 converted to nRF24L series format
+		| ((uint32_t)swap_bits(0x01) << 0); // Prefix byte of address 0 converted to nRF24L series format
 
 	NRF_RADIO->PREFIX1 = 
 			((uint32_t)swap_bits(0xC8) << 24) // Prefix byte of address 7 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC7) << 16) // Prefix byte of address 6 converted to nRF24L series format
 		| ((uint32_t)swap_bits(0xC6) << 0); // Prefix byte of address 4 converted to nRF24L series format
 
-	NRF_RADIO->BASE0 = bytewise_bitswap(0x20304050UL);  // Base address for prefix 0 converted to nRF24L series format
+	NRF_RADIO->BASE0 = bytewise_bitswap(0x02030405UL);  // Base address for prefix 0 converted to nRF24L series format
 	NRF_RADIO->BASE1 = bytewise_bitswap(0xC2C2C2C2UL);  // Base address for prefix 1-7 converted to nRF24L series format
 
   NRF_RADIO->TXADDRESS   = 0x00UL;  // Set device address 0 to use when transmitting

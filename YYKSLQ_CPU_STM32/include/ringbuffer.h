@@ -44,8 +44,10 @@
 /* Private functions ---------------------------------------------------------*/
 uint8_t buffer_get_buffer_status( uint8_t sel );
 uint8_t serial_ringbuffer_get_usage_rate(uint8_t sel);
+
 void spi_wr_buffer( uint8_t sel, uint8_t *pbuf, uint16_t len );
 uint16_t spi_rd_buffer( uint8_t sel, uint8_t *rbuf);
+
 void print_write_data_to_buffer( char *str, uint8_t len );
 void print_read_data_to_buffer( uint8_t *str ,uint8_t size);
 #endif
