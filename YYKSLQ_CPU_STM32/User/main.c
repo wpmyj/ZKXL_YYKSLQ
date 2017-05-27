@@ -12,8 +12,10 @@
 #include "main.h"
 #include "stdlib.h"
 #include "board.h"
-
-extern void app_handle_layer(void);
+#include "task_serial_cmd.h"
+#include "task_spi_message.h"
+#include "task_show_message.h"
+#include "task_find_card.h"
 
 /******************************************************************************
   Function:main
@@ -30,7 +32,13 @@ int main(void)
 	
 	while(1)
 	{	
-		app_handle_layer();
+		/*clickers send data process */
+		App_clickers_send_data_process();
 
+		/* serial cmd processing process */
+		App_seirial_cmd_process();
+
+		/* MI Card processing process */
+		App_card_process();
 	}	
 }

@@ -26,6 +26,8 @@
 #include <stdio.h>  
 #include <stdlib.h>  
 #include "cJSON.h"
+#include "task_show_message.h"
+
 /* uart global variables */
 // revice part
 static uint32_t uart_rx_timeout       = 0;

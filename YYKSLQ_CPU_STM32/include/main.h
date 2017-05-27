@@ -29,9 +29,7 @@
 #include "version.h"
 #include "nrf.h"
 #include "whitelist.h"
-#include "app_serial_cmd_process.h"
 #include "ringbuffer.h"
-#include "app_show_message_process.h"
 
 #endif //_MAIN_H_
 /**

@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'YYKSLQ_STM32' 
- * Target:  'v0.1.0' 
+ * Project: 'ZKXL_YYKSLQ_CPU' 
+ * Target:  'V0100' 
  */
 
 #ifndef RTE_COMPONENTS_H
