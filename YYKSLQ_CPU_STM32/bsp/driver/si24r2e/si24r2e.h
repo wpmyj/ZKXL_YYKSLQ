@@ -36,7 +36,7 @@
 extern u8 txbuf[52];
 extern u8 txdata[10];
 
-void si24r2e_read_nvm( uint8_t *pbuf );
+uint8_t si24r2e_read_nvm( uint8_t *pbuf );
 void si24r2e_write_nvm( uint8_t *pwbuf );
 
 #endif //__NRF_H_

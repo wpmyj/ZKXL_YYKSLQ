@@ -32,8 +32,8 @@ typedef struct
 {
 	char                *name;
 	yyk_rf_conf_typefef conf;
-	int8_t              (*update_data)( void *p_pro, uint8_t *p_uid_data );
-	int8_t              (*check_rssi) ( void *p_pro, uint8_t *p_rdata );
+	int16_t             (*update_data)( void *p_pro, uint8_t *p_uid_data );
+	int16_t             (*check_rssi) ( void *p_pro, uint8_t *p_rdata );
 }yyk_pro_tyedef;
 
 #define YYK_PROTOCOL_MUM                15
@@ -41,7 +41,7 @@ typedef struct
 
 extern yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM];
 
-int8_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol );
-int8_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data );
-int8_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data );
+int16_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol );
+int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data );
+int16_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data );
 #endif //__NRF_H_

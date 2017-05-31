@@ -111,10 +111,11 @@ int spi_wr_data(char addr, char data)
 	return reg_val; 
 }	
 
-void si24r2e_read_nvm( uint8_t *pbuf )
+uint8_t si24r2e_read_nvm( uint8_t *pbuf )
 {
 	int i;
 	int tep;
+	uint8_t write_count = 0;
 	uint8_t *pdata  = pbuf;
 	NRF2_CSN_HIGH();	
 	for(i=0;i<10000;i++);
@@ -216,8 +217,8 @@ void si24r2e_read_nvm( uint8_t *pbuf )
 	delay(25);
 
 	/* 获取编程次数 */
-	tep = spi_wr_data(0x16,0x00);
-	DEBUG_SI24R2E_LOG("\r\nProgram Count: %x \r\n",tep); 
+	write_count = spi_wr_data(0x16,0x00);
+	DEBUG_SI24R2E_LOG("\r\nProgram Count: %x \r\n",write_count); 
 
 	tep = spi_wr_data(0x5A,0xA5);
 	delay(25);
@@ -228,6 +229,8 @@ void si24r2e_read_nvm( uint8_t *pbuf )
 	tep = spi_wr_data(0x63,0x00);
 	delay(25);
 	delay(1000);
+
+	return write_count;
 }
 
 int rd_data_before_wr1()

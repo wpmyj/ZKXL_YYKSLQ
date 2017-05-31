@@ -64,4 +64,5 @@ extern task_tcb_typedef send_data_task;
 extern volatile send_data_process_tcb_tydef send_data_process_tcb;
 
 void App_clickers_send_data_process( void );
+void set_spi_rf_rev_status( uint8_t new_status );
 #endif

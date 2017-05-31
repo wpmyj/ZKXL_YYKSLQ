@@ -16,6 +16,7 @@
 #include "task_serial_cmd.h"
 #include "task_find_card.h"
 #include "task_show_message.h"
+#include "task_spi_message.h"
 #include "yyk_protocol.h"
 
 //#define SHOW_CARD_PROCESS_TIME
@@ -233,6 +234,8 @@ void App_card_process(void)
 		b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
 		b_print("  \"result\": \"%d\"\r\n",update_result);
 		b_print("}\r\n");
+		if( update_result == 0 )
+			set_spi_rf_rev_status(1);
 		
 		#endif
 		rf_set_card_status(1);

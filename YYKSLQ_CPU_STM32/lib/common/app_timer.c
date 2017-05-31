@@ -16,9 +16,8 @@ __IO uint32_t PowerOnTime;
 timer_list_typedef timer_list;
 uint8_t system_timer_status;
 
-Timer_typedef retransmit_2s_timer,retransmit_500ms_timer,system_timer;
-Timer_typedef spi_send_data_timer,spi_send_data_timer1;
-Timer_typedef systick_package_timer;
+Timer_typedef system_timer;
+Timer_typedef rf_timeout_timer;
 Timer_typedef card_buzzer_timer,card_second_find_timer;
 RTC_timer_Typedef system_rtc_timer;
 

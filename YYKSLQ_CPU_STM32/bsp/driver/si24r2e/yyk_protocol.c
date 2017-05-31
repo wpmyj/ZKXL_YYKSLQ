@@ -72,7 +72,7 @@ yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM] =
 };
 
 /*---------------------------- 协议共有函数定义 ------------------------*/
-int8_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol )
+int16_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol )
 {
 	/* 打印协议名 */
 	//printf("PROTOCOL NAME: %s",pprotocol->name);
@@ -166,7 +166,7 @@ int8_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol )
 }
 
 /*---------------------------- 协议私有函数定义 ------------------------*/
-int8_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
+int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 {
 	char str[20];
 	uint8_t pwdata[5],rdata_index = 0;
@@ -195,12 +195,15 @@ int8_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 	/* 检测UID，决定是否重新写入 */
 	do
 	{
-		si24r2e_read_nvm( prdata );
 		rdata_index = 0;
 		write_flag  = 0;
+
+		if( si24r2e_read_nvm( prdata ) == 127)
+			return -2;
+
 		for(rdata_index = 0; rdata_index<ppro->conf.data_len; rdata_index++ )
 		{
-		  //printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],ppro->conf.data[rdata_index]);
+		//printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],ppro->conf.data[rdata_index]);
 			if( prdata[rdata_index] != ppro->conf.data[rdata_index] )
 			{
 				write_flag = 1;
@@ -222,7 +225,7 @@ int8_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 	return 0;
 }
 
-int8_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
+int16_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
 {
 	uint8_t i,check_flg = 0;
 	
