@@ -111,16 +111,17 @@ int spi_wr_data(char addr, char data)
 	return reg_val; 
 }	
 
-void si24r2e_read_nvm( void )
+void si24r2e_read_nvm( uint8_t *pbuf )
 {
 	int i;
 	int tep;
+	uint8_t *pdata  = pbuf;
 	NRF2_CSN_HIGH();	
 	for(i=0;i<10000;i++);
 
 	/* 获取状态 */
 	tep = SPI_NRF_ReadReg(0x07);
-	printf("status: %x \r\n",tep);
+	DEBUG_SI24R2E_LOG("status: %x \r\n",tep);
 	delay(25);	
 
 	/* 解锁 */
@@ -135,7 +136,7 @@ void si24r2e_read_nvm( void )
 	delay(65);
 	
 	/* 读取数据 */
-	printf("NVM_DATA:\r\n");
+	DEBUG_SI24R2E_LOG("NVM_DATA:\r\n");
 	for(i=0;i<64;i++)
 	{
 		SPI_NRF_ReadReg(0xC0+i);
@@ -159,7 +160,7 @@ void si24r2e_read_nvm( void )
 					case 7: tx_power = 7;   break;
 					default:                break;
 				}
-				printf("发送功率：%d dBm\r\n",tx_power);
+				DEBUG_SI24R2E_LOG("发送功率：%d dBm\r\n",tx_power);
 				switch((tep & 0x28)>>3)
 				{
 					case 0: speed = 1000; break;
@@ -167,46 +168,46 @@ void si24r2e_read_nvm( void )
 					case 4: speed = 250;  break;
 					default:              break;
 				}
-				printf("发送速率：%d kbps \r\n",speed);
+				DEBUG_SI24R2E_LOG("发送速率：%d kbps \r\n",speed);
 			}
 			break;
 
 			case 0x01:
-				printf( "信道：%d\r\n",tep & 0x7F );
+				DEBUG_SI24R2E_LOG( "信道：%d\r\n",tep & 0x7F );
 			break;
 
 			case 0x2:
-				printf( "兼容模式：%s\r\n",(tep & 0x7F)?"普通模式":"兼容模式");
+				DEBUG_SI24R2E_LOG( "兼容模式：%s\r\n",(tep & 0x7F)?"普通模式":"兼容模式");
 			break;
 
 			case 0x07:
-				printf( "数据长度：%d\r\n",tep & 0x3F );
+				DEBUG_SI24R2E_LOG( "数据长度：%d\r\n",tep & 0x3F );
 			break;
 
 			case 0x00:
-				printf( "CRC状态：%s\r\n",(tep & 0x40) ? "开启":"关闭");
-				printf( "CRC长度：%d\r\n",(tep & 0x20) ? 2:1);
+				DEBUG_SI24R2E_LOG( "CRC状态：%s\r\n",(tep & 0x40) ? "开启":"关闭");
+				DEBUG_SI24R2E_LOG( "CRC长度：%d\r\n",(tep & 0x20) ? 2:1);
 			break;
 
 			case 0x0D:
-				printf( "动态负载：%s\r\n",(tep & 0x04) ? "开启":"关闭");
-				printf( "地址长度：%d\r\n",(tep & 0x03) ? (tep & 0x03)+2:0);
+				DEBUG_SI24R2E_LOG( "动态负载：%s\r\n",(tep & 0x04) ? "开启":"关闭");
+				DEBUG_SI24R2E_LOG( "地址长度：%d\r\n",(tep & 0x03) ? (tep & 0x03)+2:0);
 			break;
 
-			case 0x08: printf( "TX_ADDR：%02X" ,tep);	break;
-			case 0x09: printf( "%02X",tep);			      break;
-			case 0x0A: printf( "%02X",tep);						break;
-			case 0x0B: printf( "%02X",tep);						break;
-			case 0x0C: printf( "%02X\r\n",tep);						break;
+			case 0x08: DEBUG_SI24R2E_LOG( "TX_ADDR：%02X" ,tep);	break;
+			case 0x09: DEBUG_SI24R2E_LOG( "%02X",tep);			      break;
+			case 0x0A: DEBUG_SI24R2E_LOG( "%02X",tep);						break;
+			case 0x0B: DEBUG_SI24R2E_LOG( "%02X",tep);						break;
+			case 0x0C: DEBUG_SI24R2E_LOG( "%02X\r\n",tep);						break;
 
-			case 0x14: printf( "TX_DATA：%02X" ,tep);	break;
-			case 0x15:
-			case 0x16:
-			case 0x17:
-			case 0x18:
-			case 0x19:
-			case 0x1A:
-			case 0x1B: printf( " %02X" ,tep);	break;
+			case 0x14: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( "TX_DATA：%02X" ,tep);break;
+			case 0x15: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
+			case 0x16: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
+			case 0x17: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
+			case 0x18: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
+			case 0x19: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
+			case 0x1A: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
+			case 0x1B: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
 
 			default:
 				break;
@@ -216,7 +217,7 @@ void si24r2e_read_nvm( void )
 
 	/* 获取编程次数 */
 	tep = spi_wr_data(0x16,0x00);
-	printf("\r\nProgram Count: %x \r\n",tep); 
+	DEBUG_SI24R2E_LOG("\r\nProgram Count: %x \r\n",tep); 
 
 	tep = spi_wr_data(0x5A,0xA5);
 	delay(25);
@@ -233,17 +234,14 @@ int rd_data_before_wr1()
 {
 	int tep,tep11;
 	int i;
-	//printf("\r\n rd_nvm data ..............:  \r\n"); 
 	NRF2_CSN_HIGH();	
 	for(i=0;i<10000;i++);
 	
 
 	tep=SPI_NRF_ReadReg(0x07); 
-	//printf("\r\n status: %x \r\n",tep); 
 	while(!(0x40&tep))
 	{
 		tep=SPI_NRF_ReadReg(0x07); 
-		//printf("\r\n status: %x \r\n",tep); 
 	} 
 	delay(10);
 	tep=spi_wr_data(0x5C,0xA7);
@@ -299,11 +297,10 @@ void wr_data(char mode,uint8_t *pbuf)
 	delay(25);
 
 	tep=SPI_NRF_ReadReg(0x07); 
-//printf("\r\n status: %x \r\n",tep); 
+
 	while(!(0x40&tep))
 	{
 		 tep=SPI_NRF_ReadReg(0x07); 
-		//printf("\r\n status: %x \r\n",tep); 
 	}
   delay(25);
 	tep=spi_wr_data(0x5C,0xA7);
@@ -333,10 +330,9 @@ void wr_data(char mode,uint8_t *pbuf)
 	delay(25);
 	tep=spi_wr_data(0x63,0x00);
 	delay(25);
-	//printf("wr_nvm data done:  \r\n"); 
 }
 
-void si24r2e_write_nvm( void )
+void si24r2e_write_nvm( uint8_t *pwbuf )
 {
 	int un_lock=0x00;
 	int i;
@@ -348,10 +344,9 @@ void si24r2e_write_nvm( void )
 
 	if(un_lock)
 	{
-		printf("un_lock \r\n"); 
 		pre_wr_data();
 	}
-	else 	
-		printf("lock \r\n"); 
-	wr_data(0,txdata);
+
+	wr_data(0,pwbuf);
+
 }

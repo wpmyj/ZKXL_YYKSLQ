@@ -33,6 +33,7 @@ extern uint16_t list_tcb_table[UID_LIST_TABLE_SUM][WHITE_TABLE_LEN];
 uint8_t json_read_index = 0;
 uint8_t dtq_self_inspection_flg = 0;
 uint8_t logic_pac_add = 1;
+uint8_t ccurrent_protocol = 0;
 
 extern wl_typedef       wl;
 extern revicer_typedef  revicer;
@@ -44,7 +45,7 @@ const static serial_cmd_typedef cmd_list[] = {
 {"find_card_start",    sizeof("find_card_start"),         serial_cmd_find_card},
 {"find_card_stop",     sizeof("find_card_stop"),          serial_cmd_find_card},
 {"get_device_info",    sizeof("get_device_info"),         serial_cmd_get_device_info},
-{"si24r2e_rd_wr_nvm",  sizeof("si24r2e_rd_wr_nvm"),       serial_cmd_si24r2e_rd_wr_nvm},
+{"si24r2e_auto_burn",  sizeof("si24r2e_auto_burn"),       serial_cmd_si24r2e_rd_wr_nvm},
 {"NO_USE",             sizeof("NO_USE"),                  NULL                     }
 };
 
@@ -221,11 +222,17 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 {
 	int8_t result = 0;
 	uint8_t pro_index = 0;
-	char    *p_cmd_str  = cJSON_GetObjectItem(object, "rd_wr")->valuestring;
+	uint8_t data[10];
+	char    *p_cmd_str  = cJSON_GetObjectItem(object, "setting")->valuestring;
 	uint8_t rd_wr = atoi(p_cmd_str);
 	
-	if(rd_wr == 1)
-		si24r2e_read_nvm();
+	if(rd_wr == 0)
+	{
+		wl.match_status = OFF;
+		rf_set_card_status(0);
+		PcdHalt();
+		PcdAntennaOff();
+	}
 	else
 	{
 		p_cmd_str = cJSON_GetObjectItem(object, "pro_index")->valuestring;
@@ -233,6 +240,8 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 		if( pro_index <= 13 )
 		{
 			yyk_protocol_update(yyk_pro_list[pro_index]);
+			wl.match_status = ON;
+			rf_set_card_status(1);
 			result = 0;
 		}
 		else
@@ -241,12 +250,13 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 			pro_index = 0;
 			result = -1;
 		}
-		si24r2e_write_nvm();
+		ccurrent_protocol = pro_index;
 	}
 
 	b_print("{\r\n");
-	b_print("  \"fun\": \"si24r2e_rd_wr_nvm\",\r\n");
+	b_print("  \"fun\": \"si24r2e_auto_burn\",\r\n");
 	b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[pro_index]->name);
+	b_print("  \"setting\": \"%s\",\r\n",rd_wr?"start":"stop");
 	b_print("  \"result\": \"%d\"\r\n",result);
 	b_print("}\r\n");
 }

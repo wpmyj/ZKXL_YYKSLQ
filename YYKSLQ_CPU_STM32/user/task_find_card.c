@@ -10,15 +10,20 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "task_serial_cmd.h"
 #include "task_find_card.h"
 #include "task_show_message.h"
+#include "yyk_protocol.h"
 
 //#define SHOW_CARD_PROCESS_TIME
 extern uint8_t g_cSNR[10];	
 extern wl_typedef        wl;
 extern revicer_typedef   revicer;
 extern rf_config_typedef clicker_set;
+extern uint8_t           ccurrent_protocol;
 task_tcb_typedef card_task;
 
 #ifdef SHOW_CARD_PROCESS_TIME
@@ -196,16 +201,7 @@ void App_card_process(void)
 			if(( wtrte_flash_ok == 1 ) && (wl.weite_std_id_status == OFF))
 			{
 				#ifndef OPEN_CARD_DATA_SHOW 
-				char str[20];
-				b_print("{\r\n");
-				b_print("  \"fun\": \"update_card_info\",\r\n");
-				memset(str,0,20);
-				if(g_uid_len == 8)
-					sprintf(str, "%010u" , *(uint32_t *)(g_cSNR+4));
-				else
-					sprintf(str, "%010u" , *(uint32_t *)(g_cSNR));
-				b_print("  \"card_id\": \"%s\",\r\n",str);
-				b_print("}\r\n");
+				
 				DEBUG_CARD_DATA_LOG("NDEF_DataRead and NDEF_DataWrite Clear!\r\n");
 				#endif
 			}
@@ -215,12 +211,28 @@ void App_card_process(void)
 
 	if( card_current_status == 5 )
 	{
+		char str[20];
+		int8_t update_result = 0;
 		uint8_t *rpdata = (uint8_t *)&rID;
 		uint8_t *wpdata = (uint8_t *)&wID;
 		#ifdef OPEN_SILENT_MODE
 		ledOff(LBLUE);
 		#else
 		BEEP_DISEN();
+		update_result = yyk_protocol_update_uid( yyk_pro_list[ccurrent_protocol],
+		                                        (g_uid_len == 8)?(g_cSNR+4):g_cSNR);
+		b_print("{\r\n");
+		b_print("  \"fun\": \"update_card_info\",\r\n");
+		memset(str,0,20);
+		if(g_uid_len == 8)
+			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR+4));
+		else
+			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR));
+		b_print("  \"card_id\": \"%s\",\r\n",str);
+		b_print("  \"protocol\": \"%s\",\r\n",yyk_pro_list[ccurrent_protocol]->name);
+		b_print("  \"update_result\": \"%d\"\r\n",update_result);
+		b_print("}\r\n");
+		
 		#endif
 		rf_set_card_status(1);
 		memset(rpdata,0x00,sizeof(rf_id_typedf));

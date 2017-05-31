@@ -30,6 +30,7 @@
 #include "nrf.h"
 #include "whitelist.h"
 #include "ringbuffer.h"
+#include "task_show_message.h"
 
 #endif //_MAIN_H_
 /**

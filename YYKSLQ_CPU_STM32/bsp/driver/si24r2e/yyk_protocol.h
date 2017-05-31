@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include "stm32f10x_spi.h"
 #include "board.h"
+#include "si24r2e.h"
 
 typedef struct
 {
@@ -39,4 +40,6 @@ typedef struct
 extern yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM];
 
 int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol );
+int8_t yyk_protocol_update_uid( yyk_pro_tyedef *pprotocol, uint8_t *data );
+
 #endif //__NRF_H_

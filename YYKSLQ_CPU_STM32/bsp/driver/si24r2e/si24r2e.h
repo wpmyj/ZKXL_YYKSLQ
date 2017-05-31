@@ -15,6 +15,14 @@
 #include "stm32f10x_spi.h"
 #include "board.h"
 
+//#define ENABLE_SI24R2E_DEBUG_LOG
+
+#ifdef 	ENABLE_SI24R2E_DEBUG_LOG
+#define DEBUG_SI24R2E_LOG							     DEBUG_LOG
+#else
+#define DEBUG_SI24R2E_LOG(...)
+#endif
+
 // SI24R2E NVM Register Map
 #define NVM_CONFIG      0x00
 #define NVM_RF_CHA      0x01
@@ -28,7 +36,7 @@
 extern u8 txbuf[52];
 extern u8 txdata[10];
 
-void si24r2e_read_nvm( void );
-void si24r2e_write_nvm( void );
+void si24r2e_read_nvm( uint8_t *pbuf );
+void si24r2e_write_nvm( uint8_t *pwbuf );
 
 #endif //__NRF_H_

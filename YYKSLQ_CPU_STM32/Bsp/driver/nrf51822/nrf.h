@@ -120,7 +120,6 @@ void my_nrf_receive_success_handler(void);
 
 void nrf51822_spi_init(void);
 void nrf51822_parameters_init(void);
-void si24r2e_read_nvm( void );
-void si24r2e_write_nvm( void );
+
 
 #endif //__NRF_H_

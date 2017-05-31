@@ -13,7 +13,7 @@
 #include "si24r2e.h"
 
 /* 中科讯联协议 -------------------------------------------------------------*/
-static const yyk_pro_tyedef zkxl_yyk_pro = 
+static yyk_pro_tyedef zkxl_yyk_pro = 
 {
 	"中科讯联",
 	{
@@ -28,7 +28,7 @@ static const yyk_pro_tyedef zkxl_yyk_pro =
 	}
 };
 
-static const yyk_pro_tyedef jxyd_yyk_pro = 
+static yyk_pro_tyedef jxyd_yyk_pro = 
 {
 	"江西移动",
 	{
@@ -43,7 +43,7 @@ static const yyk_pro_tyedef jxyd_yyk_pro =
 	}
 };
 
-static const yyk_pro_tyedef cqyd_yyk_pro = 
+static yyk_pro_tyedef cqyd_yyk_pro = 
 {
 	"重庆移动",
 	{
@@ -70,7 +70,7 @@ yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM] =
 int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol )
 {
 	/* 打印协议名 */
-	printf("PROTOCOL NAME: %s",pprotocol->name);
+	//printf("PROTOCOL NAME: %s",pprotocol->name);
 	/* 同步信道 */
 	if(pprotocol->conf.tx_ch < 127)
 		txbuf[NVM_RF_CHA] = (txbuf[NVM_RF_CHA] & 0x80) | pprotocol->conf.tx_ch; 
@@ -151,11 +151,70 @@ int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol )
 	{
 		txbuf[NVM_FIFO_LEN]  = (txbuf[NVM_FIFO_LEN] & 0xC0);
 		txbuf[NVM_FIFO_LEN] |= pprotocol->conf.data_len;
-		memcpy(txbuf+NVM_TX_DATA_0,pprotocol->conf.data,
+		memcpy(txdata,pprotocol->conf.data,
 		         pprotocol->conf.data_len);
 	}
 	else
 		return -5;
 
+	return 0;
+}
+
+int8_t yyk_protocol_update_uid( yyk_pro_tyedef *pprotocol, uint8_t *data )
+{
+	char str[20];
+	uint8_t pwdata[5],rdata_index = 0;
+	uint8_t prdata[10];
+	uint8_t write_flag = 0;
+	uint8_t re_write_count = 0;
+
+	sprintf(str, "%010u" , *(uint32_t *)(data));
+	
+	memset(pwdata,0,5);
+	while( rdata_index < strlen( str ) )
+	{
+		pwdata[rdata_index/2] = (((str[rdata_index  ]-'0') << 4) & 0xF0) | 
+							 ((str[rdata_index+1]-'0') & 0x0F);
+		rdata_index = rdata_index + 2;
+	}
+
+	/* 匹配协议 */
+	//if(strncmp(pprotocol->name, "中科讯联", sizeof("中科讯联")== 0 ))
+	{
+		/* 同步UID */
+		if(pprotocol->conf.data_len <= 32)
+		{
+			memcpy( txdata + 3, pwdata, 5 );
+			memcpy( pprotocol->conf.data + 3, pwdata, 5 );
+		}
+	}
+	/* 检测UID，决定是否重新写入 */
+	do
+	{
+		si24r2e_read_nvm( prdata );
+		rdata_index = 0;
+		write_flag  = 0;
+		for(rdata_index = 0; rdata_index<pprotocol->conf.data_len; rdata_index++ )
+		{
+		//printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],pprotocol->conf.data[rdata_index]);
+			if( prdata[rdata_index] != pprotocol->conf.data[rdata_index] )
+			{
+				write_flag = 1;
+			}
+		}
+
+		if( write_flag == 1 )
+		{
+			si24r2e_write_nvm(pprotocol->conf.data);
+			
+			re_write_count++;
+			if( re_write_count >= 6 )
+			{
+				write_flag = 0;
+				return -1;
+			}
+		}
+	}while(write_flag == 1 );
+	
 	return 0;
 }
