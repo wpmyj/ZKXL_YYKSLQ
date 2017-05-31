@@ -104,6 +104,7 @@ void radio_configure()
 		NRF_RADIO->CRCINIT = 0xFFUL;   // Initial value
 		NRF_RADIO->CRCPOLY = 0x107UL;  // CRC poly: x^8+x^2^x^1+1
 	}
+	NRF_RADIO->TASKS_RSSISTART = 1U;       // 开始检测RSSI
 }
 
 uint32_t read_packet()
@@ -116,7 +117,6 @@ uint32_t read_packet()
 	while(NRF_RADIO->EVENTS_READY == 0U);  // 等待收发模式转换完成
 	NRF_RADIO->EVENTS_END  = 0U;           // 传输完成
 	NRF_RADIO->TASKS_START = 1U;           // 开始传输
-	NRF_RADIO->TASKS_RSSISTART = 1U;       // 开始检测RSSI
 
   /* 等待接收完成 */ 
 	while (NRF_RADIO->EVENTS_END == 0U);
