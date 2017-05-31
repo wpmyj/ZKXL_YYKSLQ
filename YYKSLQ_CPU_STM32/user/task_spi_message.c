@@ -6,7 +6,9 @@
 #include "cJSON.h"
 #include "task_spi_message.h"
 #include "task_find_card.h"
+#include "yyk_protocol.h"
 
+extern uint8_t current_protocol;
 /******************************************************************************
   Function:App_clickers_send_data_process
   Description:
@@ -17,6 +19,7 @@
 ******************************************************************************/
 void App_clickers_send_data_process( void )
 {
+	int8_t result = 0;
 	uint8_t pack_len = 0;
 	uint8_t  spi_message[255];
 	if(buffer_get_buffer_status(SPI_RBUF) == BUF_EMPTY)
@@ -24,11 +27,14 @@ void App_clickers_send_data_process( void )
 
 	memset(spi_message,0,255);
 	pack_len = spi_rd_buffer( SPI_RBUF, spi_message );
-	
-//	printf("rssi = -%03d ",spi_message[0]);
-//	printf("data_buf: ");
-//	for(i=1;i<pack_len;i++)
-//		printf(" %02x",spi_message[i]);
-//	printf("\r\n");
+
+  if(pack_len > 0)
+  {
+		result = yyk_pro_list[current_protocol]->check_rssi(yyk_pro_list[current_protocol],spi_message);
+		if( result == 0 )
+			ledOn(LRED);
+		else
+			ledOff(LRED);
+	}
 }
 

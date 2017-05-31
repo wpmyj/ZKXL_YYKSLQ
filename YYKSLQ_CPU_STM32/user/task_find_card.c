@@ -23,7 +23,7 @@ extern uint8_t g_cSNR[10];
 extern wl_typedef        wl;
 extern revicer_typedef   revicer;
 extern rf_config_typedef clicker_set;
-extern uint8_t           ccurrent_protocol;
+extern uint8_t           current_protocol;
 task_tcb_typedef card_task;
 
 #ifdef SHOW_CARD_PROCESS_TIME
@@ -219,18 +219,19 @@ void App_card_process(void)
 		ledOff(LBLUE);
 		#else
 		BEEP_DISEN();
-		update_result = yyk_protocol_update_uid( yyk_pro_list[ccurrent_protocol],
-		                                        (g_uid_len == 8)?(g_cSNR+4):g_cSNR);
+		update_result = yyk_pro_list[current_protocol]->update_data(
+		     yyk_pro_list[current_protocol],(g_uid_len == 8)?(g_cSNR+4):g_cSNR);
+
 		b_print("{\r\n");
-		b_print("  \"fun\": \"update_card_info\",\r\n");
+		b_print("  \"fun\": \"card_setting\",\r\n");
 		memset(str,0,20);
 		if(g_uid_len == 8)
 			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR+4));
 		else
 			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR));
 		b_print("  \"card_id\": \"%s\",\r\n",str);
-		b_print("  \"protocol\": \"%s\",\r\n",yyk_pro_list[ccurrent_protocol]->name);
-		b_print("  \"update_result\": \"%d\"\r\n",update_result);
+		b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
+		b_print("  \"result\": \"%d\"\r\n",update_result);
 		b_print("}\r\n");
 		
 		#endif

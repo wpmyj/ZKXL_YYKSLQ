@@ -33,7 +33,7 @@ extern uint16_t list_tcb_table[UID_LIST_TABLE_SUM][WHITE_TABLE_LEN];
 uint8_t json_read_index = 0;
 uint8_t dtq_self_inspection_flg = 0;
 uint8_t logic_pac_add = 1;
-uint8_t ccurrent_protocol = 0;
+uint8_t current_protocol = 0;
 
 extern wl_typedef       wl;
 extern revicer_typedef  revicer;
@@ -222,7 +222,6 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 {
 	int8_t result = 0;
 	uint8_t pro_index = 0;
-	uint8_t data[10];
 	char    *p_cmd_str  = cJSON_GetObjectItem(object, "setting")->valuestring;
 	uint8_t rd_wr = atoi(p_cmd_str);
 	
@@ -239,18 +238,18 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 		pro_index = atoi(p_cmd_str);
 		if( pro_index <= 13 )
 		{
-			yyk_protocol_update(yyk_pro_list[pro_index]);
+			yyk_protocol_update_rf_setting(yyk_pro_list[pro_index]);
 			wl.match_status = ON;
 			rf_set_card_status(1);
 			result = 0;
 		}
 		else
 		{
-			yyk_protocol_update(yyk_pro_list[YYK_ZKXL_PROTOCOL]);
+			yyk_protocol_update_rf_setting(yyk_pro_list[YYK_ZKXL_PROTOCOL]);
 			pro_index = 0;
 			result = -1;
 		}
-		ccurrent_protocol = pro_index;
+		current_protocol = pro_index;
 	}
 
 	b_print("{\r\n");

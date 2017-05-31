@@ -12,7 +12,9 @@
 #include "yyk_protocol.h"
 #include "si24r2e.h"
 
-/* 中科讯联协议 -------------------------------------------------------------*/
+extern uint8_t current_protocol;
+
+/*---------------------------- 协议管理结构体 ------------------------*/
 static yyk_pro_tyedef zkxl_yyk_pro = 
 {
 	"中科讯联",
@@ -25,7 +27,9 @@ static yyk_pro_tyedef zkxl_yyk_pro =
 		8,                                                      // data_len
 		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
 		1100                                                    // send_delay
-	}
+	},
+	zkxl_yyk_protocol_update_uid,
+	zkxl_yyk_protocol_check_rssi
 };
 
 static yyk_pro_tyedef jxyd_yyk_pro = 
@@ -67,7 +71,8 @@ yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM] =
 	NULL,
 };
 
-int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol )
+/*---------------------------- 协议共有函数定义 ------------------------*/
+int8_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol )
 {
 	/* 打印协议名 */
 	//printf("PROTOCOL NAME: %s",pprotocol->name);
@@ -160,13 +165,15 @@ int8_t yyk_protocol_update( yyk_pro_tyedef *pprotocol )
 	return 0;
 }
 
-int8_t yyk_protocol_update_uid( yyk_pro_tyedef *pprotocol, uint8_t *data )
+/*---------------------------- 协议私有函数定义 ------------------------*/
+int8_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 {
 	char str[20];
 	uint8_t pwdata[5],rdata_index = 0;
 	uint8_t prdata[10];
 	uint8_t write_flag = 0;
 	uint8_t re_write_count = 0;
+	yyk_pro_tyedef *ppro = (yyk_pro_tyedef *)pprotocol;
 
 	sprintf(str, "%010u" , *(uint32_t *)(data));
 	
@@ -178,26 +185,23 @@ int8_t yyk_protocol_update_uid( yyk_pro_tyedef *pprotocol, uint8_t *data )
 		rdata_index = rdata_index + 2;
 	}
 
-	/* 匹配协议 */
-	//if(strncmp(pprotocol->name, "中科讯联", sizeof("中科讯联")== 0 ))
+	/* 同步UID */
+	if(ppro->conf.data_len <= 32)
 	{
-		/* 同步UID */
-		if(pprotocol->conf.data_len <= 32)
-		{
-			memcpy( txdata + 3, pwdata, 5 );
-			memcpy( pprotocol->conf.data + 3, pwdata, 5 );
-		}
+		memcpy( txdata + 3, pwdata, 5 );
+		memcpy( ppro->conf.data + 3, pwdata, 5 );
 	}
+
 	/* 检测UID，决定是否重新写入 */
 	do
 	{
 		si24r2e_read_nvm( prdata );
 		rdata_index = 0;
 		write_flag  = 0;
-		for(rdata_index = 0; rdata_index<pprotocol->conf.data_len; rdata_index++ )
+		for(rdata_index = 0; rdata_index<ppro->conf.data_len; rdata_index++ )
 		{
-		//printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],pprotocol->conf.data[rdata_index]);
-			if( prdata[rdata_index] != pprotocol->conf.data[rdata_index] )
+		  //printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],ppro->conf.data[rdata_index]);
+			if( prdata[rdata_index] != ppro->conf.data[rdata_index] )
 			{
 				write_flag = 1;
 			}
@@ -205,7 +209,7 @@ int8_t yyk_protocol_update_uid( yyk_pro_tyedef *pprotocol, uint8_t *data )
 
 		if( write_flag == 1 )
 		{
-			si24r2e_write_nvm(pprotocol->conf.data);
+			si24r2e_write_nvm(ppro->conf.data);
 			
 			re_write_count++;
 			if( re_write_count >= 6 )
@@ -215,6 +219,35 @@ int8_t yyk_protocol_update_uid( yyk_pro_tyedef *pprotocol, uint8_t *data )
 			}
 		}
 	}while(write_flag == 1 );
-	
 	return 0;
+}
+
+int8_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
+{
+	uint8_t i,check_flg = 0;
+	
+	for(i = 0; i<yyk_pro_list[current_protocol]->conf.data_len; i++ )
+	{
+		if( data[i+1] != yyk_pro_list[current_protocol]->conf.data[i] )
+		{
+			check_flg = 1;
+		}
+	}
+
+	if( check_flg == 0 )
+	{
+		b_print("{\r\n");
+		b_print("  \"fun\": \"rssi_check\",\r\n");
+		b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
+		b_print("  \"card_id\": \"%02x%02x%02x%02x%02x\",\r\n",data[4],
+		        data[5],data[6],data[7],data[8]);
+		b_print("  \"check_rssi\": \"-%d\",\r\n",data[0]);
+		b_print("  \"result\": \"%d\"\r\n",check_flg);
+		b_print("}\r\n");
+	}
+	else
+	{
+		return -1;
+	}
+		return 0;
 }
