@@ -26,6 +26,8 @@
 // SI24R2E NVM Register Map
 #define NVM_CONFIG      0x00
 #define NVM_RF_CHA      0x01
+#define NVM_RF_TH       0x04
+#define NVM_RF_TL       0x05
 #define NVM_FIFO_LEN    0x07
 #define NVM_TX_ADDR_0   0x08
 #define NVM_FEATURE     0x0D

@@ -45,7 +45,10 @@ static yyk_pro_tyedef jxyd_yyk_pro =
 		10,                                                     // data_len
 		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
 		1100                                                    // send_delay
-	}
+	},
+	zkxl_yyk_protocol_update_uid,
+	zkxl_yyk_protocol_check_rssi,
+	zkxl_yyk_protocol_check_rssi_print,
 };
 
 static yyk_pro_tyedef cqyd_yyk_pro = 
@@ -60,7 +63,10 @@ static yyk_pro_tyedef cqyd_yyk_pro =
 		8,                                                      // data_len
 		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
 		1100                                                    // send_delay
-	}
+	},
+	zkxl_yyk_protocol_update_uid,
+	zkxl_yyk_protocol_check_rssi,
+	zkxl_yyk_protocol_check_rssi_print,
 };
 
 
@@ -162,6 +168,16 @@ int16_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol )
 	}
 	else
 		return -5;
+
+	/* 同步发送间隔 */
+	if(pprotocol->conf.send_delay >= 270)
+	{
+		txbuf[NVM_FIFO_LEN] = (txbuf[NVM_FIFO_LEN] & 0x3F);
+		txbuf[NVM_RF_TH]    = (((pprotocol->conf.send_delay-270) * 3)&0xFF00) >> 8;
+		txbuf[NVM_RF_TL]    = (((pprotocol->conf.send_delay-270)* 3)&0xFF);
+	}
+	else
+		return -6;
 
 	return 0;
 }
