@@ -205,14 +205,10 @@ void serial_cmd_find_card(const cJSON *object)
 
 void serial_cmd_get_device_info(const cJSON *object)
 {
-	char str[20];
-
 	b_print("{\r\n");
 	b_print("  \"fun\": \"get_device_info\",\r\n");
-	memset(str,0,20);
-	sprintf(str, "%010u" , *(uint32_t *)(revicer.uid));
-	b_print("  \"device_id\": \"%s\",\r\n",str);
-	b_print("  \"software_version\": \"v0.1.4\",\r\n");
+	b_print("  \"device_id\": \"%010u\",\r\n",*(uint32_t *)(revicer.uid));
+	b_print("  \"software_version\": \"v0.1.0\",\r\n");
 	b_print("  \"hardware_version\": \"ZL-RP551-MAIN-F\",\r\n");
 	b_print("  \"company\": \"zkxltech\"\r\n");
 	b_print(" }\r\n");
@@ -234,11 +230,14 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 	}
 	else
 	{
+		char *p_time_str; 
 		p_cmd_str = cJSON_GetObjectItem(object, "pro_index")->valuestring;
 		pro_index = atoi(p_cmd_str);
 		if( pro_index <= 13 )
-		{
+		{ 
 			yyk_protocol_update_rf_setting(yyk_pro_list[pro_index]);
+			p_time_str = cJSON_GetObjectItem(object, "time")->valuestring;
+			parse_str_to_time(p_time_str);
 			wl.match_status = ON;
 			rf_set_card_status(1);
 			result = 0;

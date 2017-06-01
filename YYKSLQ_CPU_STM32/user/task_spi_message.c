@@ -31,7 +31,10 @@ void App_clickers_send_data_process( void )
 
 	/* 设置接收等待超时时间 */
 	if( rf_rev_status == 1 )
+	{
 		set_spi_rf_rev_status(2);
+		sw_clear_timer(&rf_3000_timer);
+	}
 
 	if( rf_rev_status == 2 )
 	{
@@ -100,6 +103,6 @@ void App_clickers_send_data_process( void )
 
 void spi_rev_timer_init(void)
 {
-	sw_create_timer(&rf_3000_timer , 1500, 2, 3,&(rf_rev_status), NULL);
+	sw_create_timer(&rf_3000_timer , 3000, 2, 3,&(rf_rev_status), NULL);
 	sw_create_timer(&rf_300_timer ,  100,  5, 6,&(rf_rev_status), NULL);
 }

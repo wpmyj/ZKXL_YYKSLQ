@@ -176,21 +176,31 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 	uint8_t re_write_count = 0;
 	yyk_pro_tyedef *ppro = (yyk_pro_tyedef *)pprotocol;
 
-	sprintf(str, "%010u" , *(uint32_t *)(data));
-	
-	memset(pwdata,0,5);
-	while( rdata_index < strlen( str ) )
-	{
-		pwdata[rdata_index/2] = (((str[rdata_index  ]-'0') << 4) & 0xF0) | 
-							 ((str[rdata_index+1]-'0') & 0x0F);
-		rdata_index = rdata_index + 2;
-	}
-
 	/* 同步UID */
 	if(ppro->conf.data_len <= 32)
 	{
+		sprintf(str, "%010u" , *(uint32_t *)(data));
+		memset(pwdata,0,5);
+		while( rdata_index < strlen( str ) )
+		{
+			pwdata[rdata_index/2] = (((str[rdata_index  ]-'0') << 4) & 0xF0) | 
+								 ((str[rdata_index+1]-'0') & 0x0F);
+			rdata_index = rdata_index + 2;
+		}
 		memcpy( txdata + 3, pwdata, 5 );
 		memcpy( ppro->conf.data + 3, pwdata, 5 );
+	}
+
+	/* 同步系统时间 */
+	if(ppro->conf.data_len <= 32)
+	{
+		uint8_t time = (system_rtc_timer.mon - 1)* 3 + system_rtc_timer.date / 10 + 1;
+		memset(pwdata,0,5);
+		pwdata[0] = (time / 10) << 4 | (time % 10);
+		pwdata[1] = (system_rtc_timer.year % 10) << 4;
+		
+		memcpy( txdata, pwdata, 3 );
+		memcpy( ppro->conf.data, pwdata, 3 );
 	}
 
 	/* 检测UID，决定是否重新写入 */
