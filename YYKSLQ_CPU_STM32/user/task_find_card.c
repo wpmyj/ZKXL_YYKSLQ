@@ -231,12 +231,12 @@ void App_card_process(void)
 		else
 			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR));
 		b_print("  \"card_id\": \"%s\",\r\n",str);
-		b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
+	  b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
 		b_print("  \"result\": \"%d\"\r\n",update_result);
 		b_print("}\r\n");
-		if( update_result == 0 )
+		//if( update_result == 0 )
 			set_spi_rf_rev_status(1);
-		
+
 		#endif
 		rf_set_card_status(1);
 		memset(rpdata,0x00,sizeof(rf_id_typedf));

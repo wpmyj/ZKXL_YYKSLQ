@@ -67,6 +67,7 @@ void Platform_Init(void)
 	sw_timer_init();
 	system_timer_init();
 	card_timer_init();
+	spi_rev_timer_init();
 
 	/* 复位并初始化RC500 */
 	status = mfrc500_init();

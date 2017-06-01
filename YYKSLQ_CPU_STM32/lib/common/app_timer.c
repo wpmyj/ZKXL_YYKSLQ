@@ -17,7 +17,7 @@ timer_list_typedef timer_list;
 uint8_t system_timer_status;
 
 Timer_typedef system_timer;
-Timer_typedef rf_timeout_timer;
+Timer_typedef rf_3000_timer,rf_300_timer;
 Timer_typedef card_buzzer_timer,card_second_find_timer;
 RTC_timer_Typedef system_rtc_timer;
 

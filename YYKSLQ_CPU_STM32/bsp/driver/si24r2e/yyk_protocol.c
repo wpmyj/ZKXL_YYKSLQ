@@ -17,7 +17,7 @@ extern uint8_t current_protocol;
 /*---------------------------- 协议管理结构体 ------------------------*/
 static yyk_pro_tyedef zkxl_yyk_pro = 
 {
-	"中科讯联",
+	"ZKXL",
 	{
 		81,                                                     // tx_ch
 		1000,                                                   // speed
@@ -29,12 +29,13 @@ static yyk_pro_tyedef zkxl_yyk_pro =
 		1100                                                    // send_delay
 	},
 	zkxl_yyk_protocol_update_uid,
-	zkxl_yyk_protocol_check_rssi
+	zkxl_yyk_protocol_check_rssi,
+	zkxl_yyk_protocol_check_rssi_print,
 };
 
 static yyk_pro_tyedef jxyd_yyk_pro = 
 {
-	"江西移动",
+	"JXYD",
 	{
 		18,                                                     // tx_ch
 		250,                                                    // speed
@@ -49,7 +50,7 @@ static yyk_pro_tyedef jxyd_yyk_pro =
 
 static yyk_pro_tyedef cqyd_yyk_pro = 
 {
-	"重庆移动",
+	"CQYD",
 	{
 		18,                                                     // tx_ch
 		250,                                                    // speed
@@ -238,19 +239,27 @@ int16_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
 	}
 
 	if( check_flg == 0 )
+		return 0;
+	else
+		return -1;
+}
+
+void zkxl_yyk_protocol_check_rssi_print( void *pprotocol, uint8_t *data, int16_t result)
+{
+	b_print("{\r\n");
+	b_print("  \"fun\": \"rssi_check\",\r\n");
+  b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
+	if( result == 0 )
 	{
-		b_print("{\r\n");
-		b_print("  \"fun\": \"rssi_check\",\r\n");
-		b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
 		b_print("  \"card_id\": \"%02x%02x%02x%02x%02x\",\r\n",data[4],
-		        data[5],data[6],data[7],data[8]);
-		b_print("  \"check_rssi\": \"-%d\",\r\n",data[0]);
-		b_print("  \"result\": \"%d\"\r\n",check_flg);
-		b_print("}\r\n");
+					data[5],data[6],data[7],data[8]);
+		b_print("  \"check_rssi\": \"-%d dBm\",\r\n",data[0]);
 	}
 	else
 	{
-		return -1;
+		b_print("  \"card_id\": \"%02x%02x%02x%02x%02x\",\r\n",0xFF,0xFF,0xFF,0xFF,0xFF);
+		b_print("  \"check_rssi\": \"%d dBm\",\r\n",0);
 	}
-		return 0;
+	b_print("  \"result\": \"%d\"\r\n",result);
+	b_print("}\r\n");
 }

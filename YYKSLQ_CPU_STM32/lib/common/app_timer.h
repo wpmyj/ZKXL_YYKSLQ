@@ -57,7 +57,7 @@ typedef struct
 
 extern timer_list_typedef timer_list;
 extern Timer_typedef system_timer;
-extern Timer_typedef rf_timeout_timer;
+extern Timer_typedef rf_3000_timer,rf_300_timer;
 extern RTC_timer_Typedef system_rtc_timer;
 extern Timer_typedef card_buzzer_timer,card_second_find_timer;
 

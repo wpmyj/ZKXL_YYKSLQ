@@ -42,8 +42,8 @@ extern u8 txbuf[52];
 /* Private functions ---------------------------------------------------------*/
 
 const static serial_cmd_typedef cmd_list[] = {
-{"find_card_start",    sizeof("find_card_start"),         serial_cmd_find_card},
-{"find_card_stop",     sizeof("find_card_stop"),          serial_cmd_find_card},
+{"bind_start",         sizeof("bind_start"),              serial_cmd_find_card},
+{"bind_stop",          sizeof("bind_stop"),               serial_cmd_find_card},
 {"get_device_info",    sizeof("get_device_info"),         serial_cmd_get_device_info},
 {"si24r2e_auto_burn",  sizeof("si24r2e_auto_burn"),       serial_cmd_si24r2e_rd_wr_nvm},
 {"NO_USE",             sizeof("NO_USE"),                  NULL                     }
@@ -183,16 +183,16 @@ void serial_cmd_find_card(const cJSON *object)
 
 	b_print("{\r\n");
 
-	if(strncmp(p_cmd_str, "find_card_start", sizeof("find_card_start")-1)== 0 )
+	if(strncmp(p_cmd_str, "bind_start", sizeof("bind_start"))== 0 )
 	{
-		b_print("  \"fun\": \"find_card_start\",\r\n");
+		b_print("  \"fun\": \"bind_start\",\r\n");
 		wl.match_status = ON;
 		rf_set_card_status(1);
 	}
 
-	if(strncmp(p_cmd_str, "find_card_stop", sizeof("find_card_stop")-1)== 0 )
+	if(strncmp(p_cmd_str, "bind_stop", sizeof("bind_stop"))== 0 )
 	{
-		b_print("  \"fun\": \"find_card_stop\",\r\n");
+		b_print("  \"fun\": \"bind_stop\",\r\n");
 		wl.match_status = OFF;
 		rf_set_card_status(0);
 		PcdHalt();
