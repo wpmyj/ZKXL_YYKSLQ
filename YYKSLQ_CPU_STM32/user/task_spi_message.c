@@ -18,6 +18,10 @@ void set_spi_rf_rev_status( uint8_t new_status )
 	rf_rev_status = new_status;
 }
 
+uint8_t get_spi_rf_rev_status( void )
+{
+	return rf_rev_status;
+}
 /******************************************************************************
   Function:App_clickers_send_data_process
   Description:
@@ -28,10 +32,10 @@ void set_spi_rf_rev_status( uint8_t new_status )
 ******************************************************************************/
 void App_clickers_send_data_process( void )
 {
-
 	/* 设置接收等待超时时间 */
 	if( rf_rev_status == 1 )
 	{
+		clear_buffer(SPI_RBUF);
 		set_spi_rf_rev_status(2);
 		sw_clear_timer(&rf_3000_timer);
 	}
@@ -39,18 +43,14 @@ void App_clickers_send_data_process( void )
 	if( rf_rev_status == 2 )
 	{
 		int8_t result = 0;
-		uint8_t pack_len = 0;
-
-		if(buffer_get_buffer_status(SPI_RBUF) == BUF_EMPTY)
-			return;
-
-		memset(spi_message,0,255);
-		pack_len = spi_rd_buffer( SPI_RBUF, spi_message );
-
-		if( pack_len > 0 )
+		if( buffer_get_buffer_status(SPI_RBUF) != BUF_EMPTY )
 		{
-			printf("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\"}",spi_message[0],
-			spi_message[4],spi_message[5],spi_message[6],spi_message[7],spi_message[8]);
+			memset(spi_message,0,255);
+			if( spi_rd_buffer( SPI_RBUF, spi_message ) > 0 )
+			{
+				printf("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\"}\r\n",
+				spi_message[0],spi_message[4],spi_message[5],spi_message[6],spi_message[7],spi_message[8]);
+			}
 			result = yyk_pro_list[current_protocol]->check_rssi(yyk_pro_list[current_protocol],spi_message);
 			if( result == 0 )
 			{
@@ -62,7 +62,6 @@ void App_clickers_send_data_process( void )
 				rf_rev_result = -1;
 			}
 		}
-		return;
 	}
 
 	if( rf_rev_status == 3 )

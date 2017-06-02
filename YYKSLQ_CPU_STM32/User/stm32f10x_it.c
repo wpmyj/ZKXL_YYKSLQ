@@ -27,6 +27,7 @@
 #include <stdlib.h>  
 #include "cJSON.h"
 #include "task_show_message.h"
+#include "task_spi_message.h"
 
 /* uart global variables */
 // revice part
@@ -351,6 +352,7 @@ void NRF1_RFIRQ_EXTI_IRQHandler(void)
 //			printf("\r\n");
 //		}
 		/* 进行 UID 校验,判断是否发送给自己的数据 */
+		if( get_spi_rf_rev_status() == 2)
 		{
 			if(BUF_FULL != buffer_get_buffer_status(SPI_RBUF))
 			{

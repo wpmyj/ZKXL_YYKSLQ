@@ -220,9 +220,10 @@ void App_card_process(void)
 		ledOff(LBLUE);
 		#else
 		BEEP_DISEN();
+		DISABLE_ALL_IRQ();
 		update_result = yyk_pro_list[current_protocol]->update_data(
 		     yyk_pro_list[current_protocol],(g_uid_len == 8)?(g_cSNR+4):g_cSNR);
-
+		ENABLE_ALL_IRQ();
 		b_print("{\r\n");
 		b_print("  \"fun\": \"card_setting\",\r\n");
 		memset(str,0,20);
@@ -234,7 +235,7 @@ void App_card_process(void)
 	  b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
 		b_print("  \"result\": \"%d\"\r\n",update_result);
 		b_print("}\r\n");
-		//if( update_result == 0 )
+		if( update_result == 0 )
 			set_spi_rf_rev_status(1);
 
 		#endif

@@ -237,6 +237,14 @@ uint16_t spi_rd_buffer( uint8_t sel, uint8_t *rbuf)
 	return DataLen;
 }
 
+void clear_buffer( uint8_t sel )
+{
+	bottom[sel] = 0;
+	top[sel]    = 0;
+	Size[sel]   = 0;
+	status[sel] = BUF_EMPTY;
+}
+
 /******************************************************************************
   Function:ringbuffer_get_usage_rate
   Description:

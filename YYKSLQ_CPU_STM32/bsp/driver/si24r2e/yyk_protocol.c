@@ -248,26 +248,26 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 				return -1;
 			}
 		}
-	}while(write_flag == 1 );
+	}
+	while( write_flag == 1 );
+
 	return 0;
 }
 
 int16_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
 {
-	uint8_t i,check_flg = 0;
+	uint8_t i;
+	int8_t  check_flg = 0;
 	
 	for(i = 0; i<yyk_pro_list[current_protocol]->conf.data_len; i++ )
 	{
 		if( data[i+1] != yyk_pro_list[current_protocol]->conf.data[i] )
 		{
-			check_flg = 1;
+			check_flg = -1;
 		}
 	}
 
-	if( check_flg == 0 )
-		return 0;
-	else
-		return -1;
+	return check_flg;
 }
 
 void zkxl_yyk_protocol_check_rssi_print( void *pprotocol, uint8_t *data, int16_t result)

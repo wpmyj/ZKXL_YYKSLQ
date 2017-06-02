@@ -319,7 +319,9 @@ void sw_create_timer( Timer_typedef *timer_id, uint32_t delayms, uint8_t statrt_
 ******************************************************************************/
 void sw_clear_timer( Timer_typedef *timer_id )
 {
+	DISABLE_ALL_IRQ();
 	timer_list.set_cnt( timer_id, 0 );
+	ENABLE_ALL_IRQ();
 }
 
 /******************************************************************************
