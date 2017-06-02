@@ -90,6 +90,7 @@ void Platform_Init(void)
 	DelayMs(200);
 	BEEP_DISEN();
 	ledOff(LBLUE);
+	ledOff(LRED);
 }
 
 /****************************************************************************

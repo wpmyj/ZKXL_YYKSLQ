@@ -9,6 +9,7 @@
 #include "yyk_protocol.h"
 
 extern uint8_t current_protocol;
+extern uint8_t g_uid_len;
 static uint8_t rf_rev_status = 0, flash_count = 0;
 static int16_t rf_rev_result = 0;
 static uint8_t  spi_message[255];
@@ -35,9 +36,33 @@ void App_clickers_send_data_process( void )
 	/* 设置接收等待超时时间 */
 	if( rf_rev_status == 1 )
 	{
-		clear_buffer(SPI_RBUF);
-		set_spi_rf_rev_status(2);
-		sw_clear_timer(&rf_3000_timer);
+		char str[20];
+		int8_t update_result = 0;
+		update_result = yyk_pro_list[current_protocol]->update_data(
+						 yyk_pro_list[current_protocol],(g_uid_len == 8)?(g_cSNR+4):g_cSNR);
+		ENABLE_ALL_IRQ();
+		b_print("{\r\n");
+		b_print("  \"fun\": \"card_setting\",\r\n");
+		memset(str,0,20);
+		if(g_uid_len == 8)
+			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR+4));
+		else
+			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR));
+		b_print("  \"card_id\": \"%s\",\r\n",str);
+		b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
+		b_print("  \"result\": \"%d\"\r\n",update_result);
+		b_print("}\r\n");
+		if( update_result == 0 )
+		{
+			clear_buffer(SPI_RBUF);
+			set_spi_rf_rev_status(2);
+			sw_clear_timer(&rf_3000_timer);
+		}
+		else
+		{
+			rf_rev_result = -1;
+			set_spi_rf_rev_status(3);
+		}
 	}
 
 	if( rf_rev_status == 2 )
@@ -77,7 +102,7 @@ void App_clickers_send_data_process( void )
 	}
 
 	if( rf_rev_status == 4 )
-	{
+	{ 
 		flash_count++;
 		if( flash_count <= 10 )
 		{
@@ -85,8 +110,9 @@ void App_clickers_send_data_process( void )
 		}
 		else
 		{
-			yyk_pro_list[current_protocol]->check_rssi_print(
-				yyk_pro_list[current_protocol],spi_message,rf_rev_result);
+			if(rf_rev_result != -1)
+				yyk_pro_list[current_protocol]->check_rssi_print(
+					yyk_pro_list[current_protocol],spi_message,rf_rev_result);
 			set_spi_rf_rev_status(0);
 			rf_rev_result = 0;
 			flash_count   = 0;

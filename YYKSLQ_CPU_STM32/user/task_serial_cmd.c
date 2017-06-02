@@ -23,8 +23,6 @@
 #include "task_show_message.h"
 #include "yyk_protocol.h"
 
-typedef  void (*pFunction)(void);
-
 /* Private variables ---------------------------------------------------------*/
 extern nrf_communication_t nrf_data;
 extern uint16_t list_tcb_table[UID_LIST_TABLE_SUM][WHITE_TABLE_LEN];
@@ -186,17 +184,12 @@ void serial_cmd_find_card(const cJSON *object)
 	if(strncmp(p_cmd_str, "bind_start", sizeof("bind_start"))== 0 )
 	{
 		b_print("  \"fun\": \"bind_start\",\r\n");
-		wl.match_status = ON;
-		rf_set_card_status(1);
+
 	}
 
 	if(strncmp(p_cmd_str, "bind_stop", sizeof("bind_stop"))== 0 )
 	{
 		b_print("  \"fun\": \"bind_stop\",\r\n");
-		wl.match_status = OFF;
-		rf_set_card_status(0);
-		PcdHalt();
-		PcdAntennaOff();
 	}
 
 	b_print("  \"result\": \"0\"\r\n");

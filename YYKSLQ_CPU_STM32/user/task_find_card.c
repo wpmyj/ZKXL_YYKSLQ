@@ -39,7 +39,7 @@ uint8_t respon[BUF_LEN + 20];
 static rf_id_typedf rID,wID;
 
 uint16_t NDEF_Len               = 0;
-static uint8_t g_uid_len        = 0;
+uint8_t g_uid_len               = 0;
 static uint8_t wtrte_flash_ok   = 0;
 static uint8_t card_message_err = 0;
 static uint8_t find_card_ok     = 0;
@@ -86,9 +86,15 @@ void App_card_process(void)
 {
 	/* 获取当前状态 */
 	uint8_t card_current_status = 0;
+	uint8_t spi_current_status  = 0;
 	
 	card_current_status = rf_get_card_status();
 
+	spi_current_status  = get_spi_rf_rev_status();
+
+	if(spi_current_status != 0)
+		return;
+	
 	if( card_current_status == 1 )
 	{
 		uint8_t status = 0;
@@ -97,11 +103,9 @@ void App_card_process(void)
 		#endif
 
 		PcdAntennaOn();
-	  MRC500_DEBUG_START("PcdRequest \r\n");
 		memset(g_cardType, 0, 40);
 		/* reqA指令 :请求A卡，返回卡类型，不同类型卡对应不同的UID长度 */
 		status = PcdRequest(PICC_REQIDL,g_cardType);
-	  MRC500_DEBUG_END();
 		if( status == MI_OK )
 		{
 			if(find_card_ok == 1)
@@ -122,7 +126,6 @@ void App_card_process(void)
 			{	
 				g_uid_len = 4;
 			}
-			DEBUG_CARD_DEBUG_LOG("uid len = %d\r\n",g_uid_len);
 		}
 		else
 		{
@@ -212,8 +215,7 @@ void App_card_process(void)
 
 	if( card_current_status == 5 )
 	{
-		char str[20];
-		int8_t update_result = 0;
+
 		uint8_t *rpdata = (uint8_t *)&rID;
 		uint8_t *wpdata = (uint8_t *)&wID;
 		#ifdef OPEN_SILENT_MODE
@@ -221,23 +223,7 @@ void App_card_process(void)
 		#else
 		BEEP_DISEN();
 		DISABLE_ALL_IRQ();
-		update_result = yyk_pro_list[current_protocol]->update_data(
-		     yyk_pro_list[current_protocol],(g_uid_len == 8)?(g_cSNR+4):g_cSNR);
-		ENABLE_ALL_IRQ();
-		b_print("{\r\n");
-		b_print("  \"fun\": \"card_setting\",\r\n");
-		memset(str,0,20);
-		if(g_uid_len == 8)
-			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR+4));
-		else
-			sprintf(str, "%010u" , *(uint32_t *)(g_cSNR));
-		b_print("  \"card_id\": \"%s\",\r\n",str);
-	  b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
-		b_print("  \"result\": \"%d\"\r\n",update_result);
-		b_print("}\r\n");
-		if( update_result == 0 )
-			set_spi_rf_rev_status(1);
-
+		set_spi_rf_rev_status(1);
 		#endif
 		rf_set_card_status(1);
 		memset(rpdata,0x00,sizeof(rf_id_typedf));
@@ -267,5 +253,5 @@ void App_card_process(void)
 void card_timer_init( void )
 {
 	sw_create_timer(&card_buzzer_timer    , 150, 4, 5,&(card_process_status), NULL);
-	sw_create_timer(&card_second_find_timer,300, 1, 2,&(find_card_ok), NULL);
+	sw_create_timer(&card_second_find_timer,200, 1, 2,&(find_card_ok), NULL);
 }

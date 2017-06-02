@@ -236,13 +236,10 @@ uint8_t si24r2e_read_nvm( uint8_t *pbuf )
 int rd_data_before_wr1()
 {
 	int tep,tep11;
-	int i;
+	int i = 10000;
 	NRF2_CSN_HIGH();	
-	for(i=0;i<10000;i++);
-	
-
 	tep=SPI_NRF_ReadReg(0x07); 
-	while(!(0x40&tep))
+	while(!(0x40&tep) && i--)
 	{
 		tep=SPI_NRF_ReadReg(0x07); 
 	} 
@@ -293,7 +290,7 @@ void pre_wr_data()
 void wr_data(char mode,uint8_t *pbuf)
 {
 	int tep;
-	int i;
+	int i = 10000;
 	uint8_t *pdata = pbuf;
 	
 	NRF2_CSN_HIGH();		
@@ -301,7 +298,7 @@ void wr_data(char mode,uint8_t *pbuf)
 
 	tep=SPI_NRF_ReadReg(0x07); 
 
-	while(!(0x40&tep))
+	while(!(0x40&tep) && i--)
 	{
 		 tep=SPI_NRF_ReadReg(0x07); 
 	}

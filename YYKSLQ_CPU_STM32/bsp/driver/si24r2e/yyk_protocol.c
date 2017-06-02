@@ -221,8 +221,8 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 	}
 
 	/* 检测UID，决定是否重新写入 */
-	do
-	{
+	for(re_write_count=0;re_write_count<=6;re_write_count++)
+	{		
 		rdata_index = 0;
 		write_flag  = 0;
 
@@ -250,22 +250,26 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 				write_flag = 1;
 			}
 		}
-
+	  
 		if( write_flag == 1 )
 		{
 			si24r2e_write_nvm(ppro->conf.data);
-			
 			re_write_count++;
 			if( re_write_count >= 6 )
 			{
 				write_flag = 0;
+				printf("result = -1 \r\n");
 				return -1;
 			}
+			printf("write_flag = %d re_write_count = %d \r\n",write_flag,re_write_count);
+		}
+		else
+		{
+			re_write_count = 6;
+			printf("result = 0 \r\n");
+			return 0;
 		}
 	}
-	while( write_flag == 1 );
-
-	return 0;
 }
 
 int16_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
