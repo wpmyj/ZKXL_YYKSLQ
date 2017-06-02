@@ -73,22 +73,23 @@ void Platform_Init(void)
 	status = mfrc500_init();
 	printf("[ INIT ] MF1702 INIT: %s !\r\n", (status == 0) ? "OK" : "FAIL");
 
-	/* enable all IRQ */
-	ENABLE_ALL_IRQ();
-
 	/* led 、蜂鸣器声音提示初始化完毕 */
 #ifndef OPEN_SILENT_MODE
 	BEEP_EN();
 #endif
+
+	status = clicker_config_default_set();
+	printf("[ INIT ] SPI SET CPU RF : %s !\r\n", (status == 0) ? "OK" : "FAIL");
+
+	IWDG_Configuration();
+
+	/* enable all IRQ */
+	ENABLE_ALL_IRQ();
 	ledOn(LRED);
 	ledOn(LBLUE);
 	DelayMs(200);
 	BEEP_DISEN();
 	ledOff(LBLUE);
-	status = clicker_config_default_set();
-	printf("[ INIT ] SPI SET CPU RF : %s !\r\n", (status == 0) ? "OK" : "FAIL");
-	IWDG_Configuration();
-
 }
 
 /****************************************************************************

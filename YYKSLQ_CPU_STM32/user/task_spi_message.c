@@ -49,8 +49,8 @@ void App_clickers_send_data_process( void )
 
 		if( pack_len > 0 )
 		{
-//		printf("rssi = -%d uid = %02x%02x%02x%02x%02x\r\n",spi_message[0],
-//		spi_message[4],spi_message[5],spi_message[6],spi_message[7],spi_message[8]);
+			printf("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\"}",spi_message[0],
+			spi_message[4],spi_message[5],spi_message[6],spi_message[7],spi_message[8]);
 			result = yyk_pro_list[current_protocol]->check_rssi(yyk_pro_list[current_protocol],spi_message);
 			if( result == 0 )
 			{
