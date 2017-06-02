@@ -189,6 +189,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 	uint8_t pwdata[5],rdata_index = 0;
 	uint8_t prdata[10];
 	uint8_t write_flag = 0;
+	uint8_t no_power_flag = 0;
 	uint8_t re_write_count = 0;
 	yyk_pro_tyedef *ppro = (yyk_pro_tyedef *)pprotocol;
 
@@ -225,8 +226,21 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		rdata_index = 0;
 		write_flag  = 0;
 
+    /* Ð´Âú¼ì²â */
 		if( si24r2e_read_nvm( prdata ) == 127)
 			return -2;
+
+		/* ÉÏµç¼ì²â */
+		for(rdata_index = 0; rdata_index<6; rdata_index++ )
+		{
+			if( prdata[rdata_index] != prdata[rdata_index+1])
+				no_power_flag = 1;
+		}
+
+		if( no_power_flag == 0 )
+		{
+			return -3;
+		}
 
 		for(rdata_index = 0; rdata_index<ppro->conf.data_len; rdata_index++ )
 		{
