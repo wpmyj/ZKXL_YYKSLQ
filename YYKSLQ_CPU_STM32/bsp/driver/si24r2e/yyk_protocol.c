@@ -237,11 +237,6 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 				no_power_flag = 1;
 		}
 
-		if( no_power_flag == 0 )
-		{
-			return -3;
-		}
-
 		for(rdata_index = 0; rdata_index<ppro->conf.data_len; rdata_index++ )
 		{
 		//printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],ppro->conf.data[rdata_index]);
@@ -250,7 +245,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 				write_flag = 1;
 			}
 		}
-	  
+
 		if( write_flag == 1 )
 		{
 			si24r2e_write_nvm(ppro->conf.data);
@@ -258,15 +253,15 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 			if( re_write_count >= 6 )
 			{
 				write_flag = 0;
-				printf("result = -1 \r\n");
+				//printf("result = -1 \r\n");
 				return -1;
 			}
-			printf("write_flag = %d re_write_count = %d \r\n",write_flag,re_write_count);
+			//printf("write_flag = %d re_write_count = %d \r\n",write_flag,re_write_count);
 		}
 		else
 		{
 			re_write_count = 6;
-			printf("result = 0 \r\n");
+			//printf("result = 0 \r\n");
 			return 0;
 		}
 	}
