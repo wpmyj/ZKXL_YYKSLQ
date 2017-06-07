@@ -26,12 +26,12 @@
 /* Private variables ---------------------------------------------------------*/
 extern nrf_communication_t nrf_data;
 extern uint16_t list_tcb_table[UID_LIST_TABLE_SUM][WHITE_TABLE_LEN];
+extern uint8_t show_log_flag;
 
 /* 暂存题目信息，以备重发使用 */
-uint8_t json_read_index = 0;
-uint8_t dtq_self_inspection_flg = 0;
-uint8_t logic_pac_add = 1;
+uint8_t json_read_index  = 0;
 uint8_t current_protocol = 0;
+uint8_t show_log_flag    = 0;
 
 extern wl_typedef       wl;
 extern revicer_typedef  revicer;
@@ -44,6 +44,7 @@ const static serial_cmd_typedef cmd_list[] = {
 {"bind_stop",          sizeof("bind_stop"),               serial_cmd_find_card},
 {"get_device_info",    sizeof("get_device_info"),         serial_cmd_get_device_info},
 {"si24r2e_auto_burn",  sizeof("si24r2e_auto_burn"),       serial_cmd_si24r2e_rd_wr_nvm},
+{"si24r2e_show_log",   sizeof("si24r2e_show_log"),        serial_cmd_si24r2e_show_log},
 {"NO_USE",             sizeof("NO_USE"),                  NULL                     }
 };
 
@@ -196,6 +197,19 @@ void serial_cmd_find_card(const cJSON *object)
 	b_print("}\r\n");
 }
 
+void serial_cmd_si24r2e_show_log(const cJSON *object)
+{
+	uint8_t card_status = rf_get_card_status();
+	char    *p_cmd_str  = cJSON_GetObjectItem(object, "setting")->valuestring;
+	
+	show_log_flag = atoi(p_cmd_str);
+	
+	b_print("{\r\n");
+	b_print("  \"fun\": \"si24r2e_show_log\",\r\n");
+	b_print("  \"result\": \"0\"\r\n");
+	b_print("}\r\n");
+}
+
 void serial_cmd_get_device_info(const cJSON *object)
 {
 	b_print("{\r\n");
@@ -248,6 +262,7 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 	b_print("  \"fun\": \"si24r2e_auto_burn\",\r\n");
 	b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[pro_index]->name);
 	b_print("  \"setting\": \"%s\",\r\n",rd_wr?"start":"stop");
+	b_print("  \"debug\": \"%d\",\r\n",show_log_flag);
 	b_print("  \"result\": \"%d\"\r\n",result);
 	b_print("}\r\n");
 }

@@ -10,6 +10,7 @@
 
 extern uint8_t current_protocol;
 extern uint8_t g_uid_len;
+extern uint8_t show_log_flag;
 static uint8_t rf_rev_status = 0, flash_count = 0;
 static int16_t rf_rev_result = 0;
 static uint8_t  spi_message[255];
@@ -73,7 +74,8 @@ void App_clickers_send_data_process( void )
 			memset(spi_message,0,255);
 			if( spi_rd_buffer( SPI_RBUF, spi_message ) > 0 )
 			{
-				printf("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\"}\r\n",
+				if(show_log_flag >= 1)
+					b_print("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\"}\r\n",
 				spi_message[0],spi_message[4],spi_message[5],spi_message[6],spi_message[7],spi_message[8]);
 			}
 			result = yyk_pro_list[current_protocol]->check_rssi(yyk_pro_list[current_protocol],spi_message);

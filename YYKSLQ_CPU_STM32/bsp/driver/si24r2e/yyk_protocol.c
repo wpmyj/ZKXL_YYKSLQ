@@ -13,6 +13,7 @@
 #include "si24r2e.h"
 
 extern uint8_t current_protocol;
+extern uint8_t show_log_flag;
 
 /*---------------------------- 协议管理结构体 ------------------------*/
 static yyk_pro_tyedef zkxl_yyk_pro = 
@@ -230,7 +231,8 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
     /* 写满检测 */
 		program_count = si24r2e_read_nvm( prdata );
 		b_print("{\"fun\":\"brun_count\",\"read_burn_count\": \"%d\"}\r\n",program_count);
-		b_print("{\"fun\":\"debug\",\"read_nvm_data\": \"%02x %02x %02x %02x %02x %02x %02x %02x\"}\r\n",
+		if(show_log_flag >= 1)
+			b_print("{\"fun\":\"debug\",\"read_nvm_data\": \"%02x %02x %02x %02x %02x %02x %02x %02x\"}\r\n",
 		prdata[0],prdata[1],prdata[2],prdata[3],prdata[4],prdata[5],prdata[6],prdata[7]);
 		if( program_count == 127)
 			return -2;
@@ -253,7 +255,8 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		if( write_flag == 1 )
 		{
 			si24r2e_write_nvm(ppro->conf.data);
-			b_print("{\"fun\":\"debug\",\"write_nvm_data_flag\": \"1\"}\r\n");
+			if(show_log_flag >= 1)
+				b_print("{\"fun\":\"debug\",\"write_nvm_data_flag\": \"1\"}\r\n");
 			re_write_count++;
 			if( re_write_count >= 6 )
 			{

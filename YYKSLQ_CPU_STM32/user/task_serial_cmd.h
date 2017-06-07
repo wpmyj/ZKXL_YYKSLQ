@@ -90,4 +90,5 @@ typedef struct
 void serial_cmd_find_card(const cJSON *object);
 void serial_cmd_get_device_info(const cJSON *object);
 void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object);
+void serial_cmd_si24r2e_show_log(const cJSON *object);
 #endif // __POS_HANDLE_LAYER_H_
