@@ -191,6 +191,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 	uint8_t write_flag = 0;
 	uint8_t no_power_flag = 0;
 	uint8_t re_write_count = 0;
+	uint8_t program_count  = 0;
 	yyk_pro_tyedef *ppro = (yyk_pro_tyedef *)pprotocol;
 
 	/* 同步UID */
@@ -227,7 +228,9 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		write_flag  = 0;
 
     /* 写满检测 */
-		if( si24r2e_read_nvm( prdata ) == 127)
+		program_count = si24r2e_read_nvm( prdata );
+		b_print("{\"fun\":\"debug\",\"write_nvm_count\": \"%d\"}\r\n",program_count);
+		if( program_count == 127)
 			return -2;
 
 		/* 上电检测 */
@@ -253,15 +256,12 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 			if( re_write_count >= 6 )
 			{
 				write_flag = 0;
-				//printf("result = -1 \r\n");
 				return -1;
 			}
-			//printf("write_flag = %d re_write_count = %d \r\n",write_flag,re_write_count);
 		}
 		else
 		{
 			re_write_count = 6;
-			//printf("result = 0 \r\n");
 			return 0;
 		}
 	}
