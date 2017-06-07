@@ -229,7 +229,9 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 
     /* Ð´Âú¼ì²â */
 		program_count = si24r2e_read_nvm( prdata );
-		b_print("{\"fun\":\"debug\",\"write_nvm_count\": \"%d\"}\r\n",program_count);
+		b_print("{\"fun\":\"brun_count\",\"read_burn_count\": \"%d\"}\r\n",program_count);
+		b_print("{\"fun\":\"debug\",\"read_nvm_data\": \"%02x %02x %02x %02x %02x %02x %02x %02x\"}\r\n",
+		prdata[0],prdata[1],prdata[2],prdata[3],prdata[4],prdata[5],prdata[6],prdata[7]);
 		if( program_count == 127)
 			return -2;
 
@@ -242,7 +244,6 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 
 		for(rdata_index = 0; rdata_index<ppro->conf.data_len; rdata_index++ )
 		{
-		//printf("rdata:%02x  wdata:%02x\r\n",prdata[rdata_index],ppro->conf.data[rdata_index]);
 			if( prdata[rdata_index] != ppro->conf.data[rdata_index] )
 			{
 				write_flag = 1;
@@ -252,6 +253,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		if( write_flag == 1 )
 		{
 			si24r2e_write_nvm(ppro->conf.data);
+			b_print("{\"fun\":\"debug\",\"write_nvm_data_flag\": \"1\"}\r\n");
 			re_write_count++;
 			if( re_write_count >= 6 )
 			{
