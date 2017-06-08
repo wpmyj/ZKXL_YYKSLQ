@@ -113,15 +113,18 @@ int spi_wr_data(char addr, char data)
 
 uint8_t si24r2e_read_nvm( uint8_t *pbuf )
 {
-	int i;
+	int i = 10000;
 	int tep;
 	uint8_t write_count = 0;
 	uint8_t *pdata  = pbuf;
-	NRF2_CSN_HIGH();	
-	for(i=0;i<10000;i++);
-
+	NRF2_CSN_HIGH();
 	/* »ñÈ¡×´Ì¬ */
 	tep = SPI_NRF_ReadReg(0x07);
+	while(!(0x40&tep) && i--)
+	{
+		tep=SPI_NRF_ReadReg(0x07); 
+		printf("\r\n status: %x \r\n",tep); 
+	}
 	DEBUG_SI24R2E_LOG("status: %x \r\n",tep);
 	delay(25);	
 
