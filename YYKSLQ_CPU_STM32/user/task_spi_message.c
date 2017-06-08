@@ -41,7 +41,6 @@ void App_clickers_send_data_process( void )
 		int8_t update_result = 0;
 		update_result = yyk_pro_list[current_protocol]->update_data(
 						 yyk_pro_list[current_protocol],(g_uid_len == 8)?(g_cSNR+4):g_cSNR);
-		ENABLE_ALL_IRQ();
 		b_print("{\r\n");
 		b_print("  \"fun\": \"card_setting\",\r\n");
 		memset(str,0,20);
