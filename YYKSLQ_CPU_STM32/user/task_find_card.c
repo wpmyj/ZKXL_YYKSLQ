@@ -222,7 +222,6 @@ void App_card_process(void)
 		ledOff(LBLUE);
 		#else
 		BEEP_DISEN();
-		DISABLE_ALL_IRQ();
 		set_spi_rf_rev_status(1);
 		#endif
 		rf_set_card_status(1);
