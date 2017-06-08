@@ -91,6 +91,7 @@ void Platform_Init(void)
 	BEEP_DISEN();
 	ledOff(LBLUE);
 	ledOff(LRED);
+	b_print("{\"fun\":\"system_init\",\"status\": \"%d\"}\r\n",status);
 }
 
 /****************************************************************************
