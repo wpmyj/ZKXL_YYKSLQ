@@ -231,6 +231,9 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 	if(rd_wr == 0)
 	{
 		wl.match_status = OFF;
+		BEEP_DISEN();
+		ledOff(LBLUE);
+		ledOff(LRED);
 		rf_set_card_status(0);
 		PcdHalt();
 		PcdAntennaOff();

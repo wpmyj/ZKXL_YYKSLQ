@@ -278,6 +278,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 			return 0;
 		}
 	}
+	return 0;
 }
 
 int16_t zkxl_yyk_protocol_check_rssi( void *pprotocol, uint8_t *data )
