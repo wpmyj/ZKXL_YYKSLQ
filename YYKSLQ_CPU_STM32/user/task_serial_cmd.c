@@ -64,48 +64,46 @@ void serial_cmd_process(void)
 {
 	if( rjson_count > 0 )
 	{
+		cJSON *json;
 		char header[30];
 		char *pdata = (char *)uart_irq_revice_massage[json_read_index];
 		/* 增加对'的支持 */
 		exchange_json_format( pdata, '\'', '\"' );
 		memcpy(header,pdata+8,14);
-		
+
+		json = cJSON_Parse((char *)uart_irq_revice_massage[json_read_index]);
+		if (!json)
 		{
-			cJSON *json;
-			json = cJSON_Parse((char *)uart_irq_revice_massage[json_read_index]);
-			if (!json)
-			{
-				  b_print("{\r\n");
-	        b_print("  \"fun\": \"Error\",\r\n");
-					b_print("  \"description\": \"json syntax error!\"\r\n");
-					b_print("}\r\n");
-			}
-			else
-			{
-				uint8_t i = 0, is_know_cmd = 0;
-				char *p_cmd_str = cJSON_GetObjectItem(json, "fun")->valuestring;
-
-				while(cmd_list[i].cmd_fun != NULL)
-				{
-					if(strncmp(p_cmd_str, cmd_list[i].cmd_str,
-						 cmd_list[i].cmd_len)== 0)
-					{
-						cmd_list[i].cmd_fun(json);
-						is_know_cmd = 1;
-					}
-					i++;
-				}
-
-				if(is_know_cmd == 0)
-				{
-					b_print("{\r\n");
-	        b_print("  \"fun\": \"Error\",\r\n");
-					b_print("  \"description\": \"unknow cmd!\"\r\n");
-					b_print("}\r\n");
-				}
-			}
-			cJSON_Delete(json);
+				b_print("{\r\n");
+				b_print("  \"fun\": \"Error\",\r\n");
+				b_print("  \"description\": \"json syntax error!\"\r\n");
+				b_print("}\r\n");
 		}
+		else
+		{
+			uint8_t i = 0, is_know_cmd = 0;
+			char *p_cmd_str = cJSON_GetObjectItem(json, "fun")->valuestring;
+
+			while(cmd_list[i].cmd_fun != NULL)
+			{
+				if(strncmp(p_cmd_str, cmd_list[i].cmd_str,
+					 cmd_list[i].cmd_len)== 0)
+				{
+					cmd_list[i].cmd_fun(json);
+					is_know_cmd = 1;
+				}
+				i++;
+			}
+
+			if(is_know_cmd == 0)
+			{
+				b_print("{\r\n");
+				b_print("  \"fun\": \"Error\",\r\n");
+				b_print("  \"description\": \"unknow cmd!\"\r\n");
+				b_print("}\r\n");
+			}
+		}
+		cJSON_Delete(json);
 
 		rjson_count--;
 		memset( pdata, 0, JSON_BUFFER_LEN );

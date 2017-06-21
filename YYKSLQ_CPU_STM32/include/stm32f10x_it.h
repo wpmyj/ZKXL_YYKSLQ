@@ -28,8 +28,8 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-#define JSON_ITEM_MAX    1
-#define JSON_BUFFER_LEN  4500
+#define JSON_ITEM_MAX    5
+#define JSON_BUFFER_LEN  600
 extern uint8_t  uart_irq_revice_massage[JSON_ITEM_MAX][JSON_BUFFER_LEN];
 extern uint16_t rjson_count;
 

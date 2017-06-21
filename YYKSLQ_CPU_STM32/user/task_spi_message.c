@@ -13,7 +13,8 @@ extern uint8_t g_uid_len;
 extern uint8_t show_log_flag;
 static uint8_t rf_rev_status = 0, flash_count = 0;
 static int16_t rf_rev_result = 0;
-static uint8_t  spi_message[255];
+static uint8_t spi_message[255];
+static uint8_t beep_open_flag = 0;
 	
 void set_spi_rf_rev_status( uint8_t new_status )
 {
@@ -57,13 +58,15 @@ void App_clickers_send_data_process( void )
 			clear_buffer(SPI_RBUF);
 			set_spi_rf_rev_status(2);
 			BEEP_EN() ;
+			beep_open_flag = 1;
 			sw_clear_timer(&rf_3000_timer);
 		}
 		else
 		{
 			rf_rev_result = -1;
 			set_spi_rf_rev_status(3);
-			BEEP_DISEN();
+			BEEP_EN() ;
+			beep_open_flag = 2;
 		}
 	}
 
@@ -94,7 +97,6 @@ void App_clickers_send_data_process( void )
 
 	if( rf_rev_status == 3 )
 	{
-		BEEP_DISEN()
 		switch( rf_rev_result )
 		{
 			case  0: ledOn(LRED);      set_spi_rf_rev_status(4);break;
@@ -127,6 +129,7 @@ void App_clickers_send_data_process( void )
 			{
 				set_spi_rf_rev_status(0);
 			}
+			rf_set_card_status(1);
 		}
 		return;
 	}
@@ -135,8 +138,15 @@ void App_clickers_send_data_process( void )
 		set_spi_rf_rev_status(3);
 }
 
+void beep_callback(void)
+{
+	BEEP_DISEN();
+}
+
 void spi_rev_timer_init(void)
 {
 	sw_create_timer(&rf_3000_timer , 3000, 2, 3,&(rf_rev_status), NULL);
 	sw_create_timer(&rf_300_timer ,  100,  5, 6,&(rf_rev_status), NULL);
+	sw_create_timer(&beep_ok_timer , 100,  1, 0,&(beep_open_flag),beep_callback);
+	sw_create_timer(&beep_fail_timer,300,  2, 0,&(beep_open_flag),beep_callback);
 }
