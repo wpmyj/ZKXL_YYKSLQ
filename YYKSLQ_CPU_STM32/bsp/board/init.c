@@ -87,6 +87,7 @@ void Platform_Init(void)
 	ENABLE_ALL_IRQ();
 	ledOn(LRED);
 	ledOn(LBLUE);
+	BEEP_EN();
 	DelayMs(200);
 	BEEP_DISEN();
 	ledOff(LBLUE);
