@@ -32,6 +32,10 @@
 #define NVM_TX_ADDR_0   0x08
 #define NVM_FEATURE     0x0D
 #define NVM_RF_SETUP    0x0E
+#define NVM_REP_PSE     0x0F
+#define NVM_TEST        0x10
+#define NVM_LV_REP      0x11
+#define NVM_TRIM_CLOCK  0x13
 #define NVM_TX_DATA_0   0x14
 
 
