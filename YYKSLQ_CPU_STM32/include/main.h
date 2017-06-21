@@ -31,6 +31,7 @@
 #include "whitelist.h"
 #include "ringbuffer.h"
 #include "task_show_message.h"
+#include "si24r2e.h"
 
 #endif //_MAIN_H_
 /**

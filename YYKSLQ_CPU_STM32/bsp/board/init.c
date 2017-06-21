@@ -75,7 +75,7 @@ void Platform_Init(void)
 
 	/* led 、蜂鸣器声音提示初始化完毕 */
 #ifndef OPEN_SILENT_MODE
-	BEEP_EN();
+	//BEEP_EN();
 #endif
 
 	status = clicker_config_default_set();

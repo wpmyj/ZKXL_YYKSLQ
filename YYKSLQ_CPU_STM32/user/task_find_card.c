@@ -87,6 +87,11 @@ void App_card_process(void)
 	/* 获取当前状态 */
 	uint8_t card_current_status = 0;
 	uint8_t spi_current_status  = 0;
+
+	uint8_t power_status = get_power_status();
+
+	if(power_status == 0)
+		return;
 	
 	card_current_status = rf_get_card_status();
 
@@ -94,7 +99,7 @@ void App_card_process(void)
 
 	if(spi_current_status != 0)
 		return;
-	
+
 	if( card_current_status == 1 )
 	{
 		uint8_t status = 0;
@@ -191,8 +196,6 @@ void App_card_process(void)
 			{
 				#ifdef OPEN_SILENT_MODE
 				ledOn(LBLUE);
-				#else
-				BEEP_EN();
 				#endif
 				Deselect();
 				PcdHalt();
@@ -215,13 +218,11 @@ void App_card_process(void)
 
 	if( card_current_status == 5 )
 	{
-
 		uint8_t *rpdata = (uint8_t *)&rID;
 		uint8_t *wpdata = (uint8_t *)&wID;
 		#ifdef OPEN_SILENT_MODE
 		ledOff(LBLUE);
 		#else
-		BEEP_DISEN();
 		set_spi_rf_rev_status(1);
 		#endif
 		rf_set_card_status(1);

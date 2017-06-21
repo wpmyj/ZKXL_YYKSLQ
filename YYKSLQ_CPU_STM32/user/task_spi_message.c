@@ -56,12 +56,14 @@ void App_clickers_send_data_process( void )
 		{
 			clear_buffer(SPI_RBUF);
 			set_spi_rf_rev_status(2);
+			BEEP_EN() ;
 			sw_clear_timer(&rf_3000_timer);
 		}
 		else
 		{
 			rf_rev_result = -1;
 			set_spi_rf_rev_status(3);
+			BEEP_DISEN();
 		}
 	}
 
@@ -92,11 +94,12 @@ void App_clickers_send_data_process( void )
 
 	if( rf_rev_status == 3 )
 	{
+		BEEP_DISEN()
 		switch( rf_rev_result )
 		{
-			case  0: ledOn(LRED)     ;set_spi_rf_rev_status(4);break;
-			case -1: ledOn(LBLUE)    ;set_spi_rf_rev_status(4);break;
-			case -2: ledToggle(LBLUE);set_spi_rf_rev_status(4);break;
+			case  0: ledOn(LRED);      set_spi_rf_rev_status(4);break;
+			case -1: ledOn(LBLUE);     set_spi_rf_rev_status(4);break;
+			case -2: ledToggle(LBLUE); set_spi_rf_rev_status(4);break;
 			default: break;
 		}
 		return;
@@ -105,12 +108,13 @@ void App_clickers_send_data_process( void )
 	if( rf_rev_status == 4 )
 	{ 
 		flash_count++;
-		if( flash_count <= 10 )
+		if( flash_count <= 2 )
 		{
 			set_spi_rf_rev_status(5);
 		}
 		else
 		{
+			uint8_t power_status = get_power_status();
 			if(rf_rev_result != -1)
 				yyk_pro_list[current_protocol]->check_rssi_print(
 					yyk_pro_list[current_protocol],spi_message,rf_rev_result);
@@ -119,6 +123,10 @@ void App_clickers_send_data_process( void )
 			flash_count   = 0;
 			ledOff(LRED);
 			ledOff(LBLUE);
+			if(power_status == 0)
+			{
+				set_spi_rf_rev_status(0);
+			}
 		}
 		return;
 	}

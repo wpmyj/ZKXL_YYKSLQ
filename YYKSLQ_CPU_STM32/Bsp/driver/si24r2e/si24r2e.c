@@ -11,11 +11,13 @@
 #include "main.h"
 #include "si24r2e.h"
 #include "yyk_protocol.h"
+#include "task_find_card.h"
 
 u8 txbuf[52] ={0x74,0x51,0xc0,0x8d,0x05,0xdc,0x02,0x08,0x01,0x02,
 							 0x03,0x04,0x05,0xef,0x03,0x01,0x07,0x33,0x34,0xa9};
 u8 txdata[10]={0x00,0x00,0x00,0x66,0x55,0x44,0x00,0x07};
-
+static uint8_t power_on_flag = 0;
+extern wl_typedef       wl;
 /******************************************************************************
  * 函数名：SPI_NRF_RW
  * 描述  ：用于向NRF读/写一字节数据
@@ -123,7 +125,6 @@ uint8_t si24r2e_read_nvm( uint8_t *pbuf )
 	while(!(0x40&tep) && i--)
 	{
 		tep=SPI_NRF_ReadReg(0x07); 
-		printf("\r\n status: %x \r\n",tep); 
 	}
 	DEBUG_SI24R2E_LOG("status: %x \r\n",tep);
 	delay(25);	
@@ -353,3 +354,18 @@ void si24r2e_write_nvm( uint8_t *pwbuf )
 	wr_data(0,pwbuf);
 
 }
+
+void sync_power_check(void)
+{
+	static uint8_t io_s[3] = {0,0,0};
+	static uint8_t r_index = 0;
+	io_s[r_index] = (NRF2_SPI_IRQ_PORT->IDR & NRF2_SPI_IRQ_PIN) ? 1 : 0;
+	r_index = (r_index + 1) % 3;
+	power_on_flag = (io_s[r_index] + io_s[(r_index+3-1)%3] + io_s[(r_index+3-2)%3])/3;
+}
+
+uint8_t get_power_status(void)
+{
+	return power_on_flag;
+}
+

@@ -40,5 +40,6 @@ extern u8 txdata[10];
 
 uint8_t si24r2e_read_nvm( uint8_t *pbuf );
 void si24r2e_write_nvm( uint8_t *pwbuf );
-
+void sync_power_check(void);
+uint8_t get_power_status(void);
 #endif //__NRF_H_

@@ -32,6 +32,7 @@ extern uint8_t show_log_flag;
 uint8_t json_read_index  = 0;
 uint8_t current_protocol = 0;
 uint8_t show_log_flag    = 0;
+uint8_t si24r2e_auto_burn_flag = 0;
 
 extern wl_typedef       wl;
 extern revicer_typedef  revicer;
@@ -237,6 +238,7 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 		rf_set_card_status(0);
 		PcdHalt();
 		PcdAntennaOff();
+		si24r2e_auto_burn_flag = 0;
 	}
 	else
 	{
@@ -258,6 +260,7 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 			pro_index = 0;
 			result = -1;
 		}
+		si24r2e_auto_burn_flag = 1;
 		current_protocol = pro_index;
 	}
 

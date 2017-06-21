@@ -337,6 +337,9 @@ void systemtick_timeout_callback( void )
 	system_timer_status = 0;
 
 	system_rtc_timer.ms += 100;
+
+	sync_power_check();
+
 	if( system_rtc_timer.ms >= 1000 )
 	{
 		system_rtc_timer.ms = 0;

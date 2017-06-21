@@ -147,7 +147,7 @@ void nrf2_spi_init(void)
 
 	/* Configure SPI_IRQ Pin */
 	GPIO_InitStructure.GPIO_Pin   = NRF2_SPI_IRQ_PIN;
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IPD;
 	GPIO_Init(NRF2_SPI_IRQ_PORT, &GPIO_InitStructure);
 
 	/* NRF2_SPI相关参数配置 */
