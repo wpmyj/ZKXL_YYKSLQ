@@ -267,6 +267,7 @@ void serial_cmd_si24r2e_rd_wr_nvm(const cJSON *object)
 	b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[pro_index]->name);
 	b_print("  \"setting\": \"%s\",\r\n",rd_wr?"start":"stop");
 	b_print("  \"debug\": \"%d\",\r\n",show_log_flag);
+	b_print("  \"version\": \"%d\",\r\n",yyk_pro_list[pro_index]->conf.version);
 	b_print("  \"result\": \"%d\"\r\n",result);
 	b_print("}\r\n");
 }

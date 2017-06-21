@@ -27,55 +27,17 @@ static yyk_pro_tyedef zkxl_yyk_pro =
 		{ 0x01, 0x02, 0x03, 0x04, 0x05 },                       // address
 		8,                                                      // data_len
 		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
-		1100                                                    // send_delay
+		1100,                                                   // send_delay
+		3101                                                    // version
 	},
 	zkxl_yyk_protocol_update_uid,
 	zkxl_yyk_protocol_check_rssi,
 	zkxl_yyk_protocol_check_rssi_print,
 };
-
-static yyk_pro_tyedef jxyd_yyk_pro = 
-{
-	"JXYD",
-	{
-		18,                                                     // tx_ch
-		250,                                                    // speed
-		0,                                                      // tx_power
-		4,                                                      // addr_len
-		{ 0x33, 0x20, 0x0d, 0x54 },                             // address
-		10,                                                     // data_len
-		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
-		1100                                                    // send_delay
-	},
-	zkxl_yyk_protocol_update_uid,
-	zkxl_yyk_protocol_check_rssi,
-	zkxl_yyk_protocol_check_rssi_print,
-};
-
-static yyk_pro_tyedef cqyd_yyk_pro = 
-{
-	"CQYD",
-	{
-		18,                                                     // tx_ch
-		250,                                                    // speed
-		0,                                                      // tx_power
-		4,                                                      // addr_len
-		{ 0x34, 0x12, 0xbb, 0xAA },                             // address
-		8,                                                      // data_len
-		{ 0x00, 0x00, 0x00, 0x66, 0x55, 0x44, 0x00, 0x07 },     // data
-		1100                                                    // send_delay
-	},
-	zkxl_yyk_protocol_update_uid,
-	zkxl_yyk_protocol_check_rssi,
-	zkxl_yyk_protocol_check_rssi_print,
-};
-
 
 yyk_pro_tyedef *yyk_pro_list[YYK_PROTOCOL_MUM] = 
 {
 	(yyk_pro_tyedef *)&zkxl_yyk_pro,
-	(yyk_pro_tyedef *)&jxyd_yyk_pro,
-	(yyk_pro_tyedef *)&cqyd_yyk_pro,
 	NULL,
 };
 
@@ -217,6 +179,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		memset(pwdata,0,5);
 		pwdata[0] = (time / 10) << 4 | (time % 10);
 		pwdata[1] = (system_rtc_timer.year % 10) << 4;
+		pwdata[3] = (ppro->conf.version % 10) & 0x0F;
 		
 		memcpy( txdata, pwdata, 3 );
 		memcpy( ppro->conf.data, pwdata, 3 );

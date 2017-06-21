@@ -26,6 +26,7 @@ typedef struct
 	uint8_t             data_len;
 	uint8_t             data[10];
 	uint16_t            send_delay;
+	uint16_t            version;
 }yyk_rf_conf_typefef; 
 
 typedef struct
