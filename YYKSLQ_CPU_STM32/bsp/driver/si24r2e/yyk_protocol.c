@@ -230,7 +230,8 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 
     /* Ð´Âú¼ì²â */
 		program_count = si24r2e_read_nvm( prdata );
-		if( program_count > 127 )
+		no_power_flag = get_power_status();
+		if( program_count > 127 | no_power_flag ==0 )
 			return -3;
 
 		if(show_log_flag >= 1)
