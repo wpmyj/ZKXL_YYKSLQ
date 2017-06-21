@@ -179,7 +179,7 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		memset(pwdata,0,5);
 		pwdata[0] = (time / 10) << 4 | (time % 10);
 		pwdata[1] = (system_rtc_timer.year % 10) << 4;
-		pwdata[3] = (ppro->conf.version % 10) & 0x0F;
+		pwdata[2] = (ppro->conf.version % 10) & 0x0F;
 		
 		memcpy( txdata, pwdata, 3 );
 		memcpy( ppro->conf.data, pwdata, 3 );
@@ -266,6 +266,7 @@ void zkxl_yyk_protocol_check_rssi_print( void *pprotocol, uint8_t *data, int16_t
 	b_print("{\r\n");
 	b_print("  \"fun\": \"rssi_check\",\r\n");
   b_print("  \"pro_name\": \"%s\",\r\n",yyk_pro_list[current_protocol]->name);
+	b_print("  \"version\": \"%d\",\r\n",yyk_pro_list[current_protocol]->conf.version);
 	if( result == 0 )
 	{
 		b_print("  \"card_id\": \"%02x%02x%02x%02x%02x\",\r\n",data[4],

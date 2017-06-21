@@ -79,8 +79,19 @@ void App_clickers_send_data_process( void )
 			if( spi_rd_buffer( SPI_RBUF, spi_message ) > 0 )
 			{
 				if(show_log_flag >= 1)
-					b_print("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\"}\r\n",
-				spi_message[0],spi_message[4],spi_message[5],spi_message[6],spi_message[7],spi_message[8]);
+				{
+					uint8_t mon_index_h = (spi_message[1] & 0xF0)>>4;
+					uint8_t mon_index_l = (spi_message[1] & 0x0F);
+					uint8_t mon_index   = mon_index_h * 10 + mon_index_l - 1;
+					uint8_t mon         = mon_index / 3 + 1;
+					uint8_t date        = mon_index % 3;
+					b_print("{\"fun\":\"debug\",\"rssi\":\"-%d\", \
+					          \"uid\":\"%02x%02x%02x%02x%02x\",   \
+					          \"data\":\"%02x %02x %02x\"}\r\n",
+									  spi_message[0],spi_message[4],spi_message[5],
+					          spi_message[6],spi_message[7],spi_message[8],
+					          spi_message[1],spi_message[2],spi_message[3]);
+				}
 			}
 			result = yyk_pro_list[current_protocol]->check_rssi(yyk_pro_list[current_protocol],spi_message);
 			if( result == 0 )
