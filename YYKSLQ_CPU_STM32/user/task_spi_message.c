@@ -148,5 +148,5 @@ void spi_rev_timer_init(void)
 	sw_create_timer(&rf_3000_timer , 3000, 2, 3,&(rf_rev_status), NULL);
 	sw_create_timer(&rf_300_timer ,  100,  5, 6,&(rf_rev_status), NULL);
 	sw_create_timer(&beep_ok_timer , 100,  1, 0,&(beep_open_flag),beep_callback);
-	sw_create_timer(&beep_fail_timer,300,  2, 0,&(beep_open_flag),beep_callback);
+	sw_create_timer(&beep_fail_timer,600,  2, 0,&(beep_open_flag),beep_callback);
 }

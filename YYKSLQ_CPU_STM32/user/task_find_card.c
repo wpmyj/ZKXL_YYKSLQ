@@ -25,6 +25,7 @@ extern wl_typedef        wl;
 extern revicer_typedef   revicer;
 extern rf_config_typedef clicker_set;
 extern uint8_t           current_protocol;
+extern uint8_t           si24r2e_auto_burn_flag;
 task_tcb_typedef card_task;
 
 #ifdef SHOW_CARD_PROCESS_TIME
@@ -90,7 +91,7 @@ void App_card_process(void)
 
 	uint8_t power_status = get_power_status();
 
-	if(power_status == 0)
+	if((power_status == 0) || (si24r2e_auto_burn_flag == 0))
 		return;
 	
 	card_current_status = rf_get_card_status();
