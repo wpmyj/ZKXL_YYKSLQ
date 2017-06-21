@@ -98,7 +98,6 @@ void uart_revice_data_state_mechine( uint8_t data )
 						uart_rx_cnt = 0;
 						uart_json_nesting_num = 0;
 						uart_rx_timeout = 0;
-						rjson_count = 0;
 						break;
 					}
 					if(UART_EOF == data)
@@ -293,7 +292,6 @@ void SysTick_Handler(void)
 				     0,JSON_BUFFER_LEN);
 			uart_json_nesting_num = 0;
 			uart_rx_timeout = 0;
-			rjson_count = 0;
 		}
 	}
 }

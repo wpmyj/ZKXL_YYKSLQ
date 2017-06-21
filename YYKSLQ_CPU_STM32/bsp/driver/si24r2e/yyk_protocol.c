@@ -209,13 +209,6 @@ int16_t zkxl_yyk_protocol_update_uid( void *pprotocol, uint8_t *data )
 		if( program_count == 127 )
 			return -2;
 
-		/* …œµÁºÏ≤‚ */
-		for(rdata_index = 0; rdata_index<6; rdata_index++ )
-		{
-			if( prdata[rdata_index] != prdata[rdata_index+1])
-				no_power_flag = 1;
-		}
-
 		for(rdata_index = 0; rdata_index<ppro->conf.data_len; rdata_index++ )
 		{
 			if( prdata[rdata_index] != ppro->conf.data[rdata_index] )
