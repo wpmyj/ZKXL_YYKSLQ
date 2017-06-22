@@ -197,14 +197,20 @@ uint8_t si24r2e_read_nvm( uint8_t *pbuf )
 			case 0x0D:
 				DEBUG_SI24R2E_LOG( "动态负载：%s\r\n",(tep & 0x04) ? "开启":"关闭");
 				DEBUG_SI24R2E_LOG( "地址长度：%d\r\n",(tep & 0x03) ? (tep & 0x03)+2:0);
+			  DEBUG_SI24R2E_LOG( "16次唤醒跟新使能：%d\r\n",(tep & 0x10) ? 1:0);
 			break;
 
 			case 0x08: DEBUG_SI24R2E_LOG( "TX_ADDR：%02X" ,tep);	break;
 			case 0x09: DEBUG_SI24R2E_LOG( "%02X",tep);			      break;
 			case 0x0A: DEBUG_SI24R2E_LOG( "%02X",tep);						break;
 			case 0x0B: DEBUG_SI24R2E_LOG( "%02X",tep);						break;
-			case 0x0C: DEBUG_SI24R2E_LOG( "%02X\r\n",tep);						break;
-
+			case 0x0C: DEBUG_SI24R2E_LOG( "%02X\r\n",tep);				break;
+			case 0x0F: 
+				DEBUG_SI24R2E_LOG( "低电压检测替换字节的位置：%02X\r\n",tep);
+			break;
+			case 0x10:
+				DEBUG_SI24R2E_LOG( "低电压检测：%s\r\n",(tep & 0x08) ? "开启":"关闭");
+			break;
 			case 0x14: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( "TX_DATA：%02X" ,tep);break;
 			case 0x15: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
 			case 0x16: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
@@ -214,6 +220,8 @@ uint8_t si24r2e_read_nvm( uint8_t *pbuf )
 			case 0x1A: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
 			case 0x1B: *pdata = tep; pdata++; DEBUG_SI24R2E_LOG( " %02X" ,tep);	break;
 
+				
+			
 			default:
 				break;
 		}

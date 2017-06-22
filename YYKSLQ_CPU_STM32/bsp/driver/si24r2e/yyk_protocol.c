@@ -144,15 +144,15 @@ int16_t yyk_protocol_update_rf_setting( yyk_pro_tyedef *pprotocol )
 
 	/* 低电压报警设置 ：2.2V*/
 	{
-		txbuf[NVM_TEST]        = txbuf[NVM_TEST] & 0x08;
-		txbuf[NVM_LV_REP]      = (txbuf[NVM_LV_REP] & 0x01) | ((system_rtc_timer.year % 10) << 4);
-		txbuf[NVM_LV_REP]      = 0x01;
-		txbuf[NVM_TRIM_CLOCK]  = (txbuf[NVM_TRIM_CLOCK] & 0xF0) | 0x60;
+		txbuf[NVM_TEST]        = txbuf[NVM_TEST] | 0x08;
+		txbuf[NVM_LV_REP]      = (txbuf[NVM_LV_REP] | 0x01) | ((system_rtc_timer.year % 10) << 4);
+		txbuf[NVM_REP_PSE]     = 0x01;
+		txbuf[NVM_TRIM_CLOCK]  = (txbuf[NVM_TRIM_CLOCK] & 0x0F) | 0x60;
 	}
 
 	/* 唤醒配置设置 ：每16次唤醒才写入一次数据*/
 	{
-		txbuf[NVM_FEATURE]  = txbuf[NVM_FEATURE] & 0x10;
+		txbuf[NVM_FEATURE]  = txbuf[NVM_FEATURE] | 0x10;
 	}
 	return 0;
 }
