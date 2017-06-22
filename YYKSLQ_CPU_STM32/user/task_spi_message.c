@@ -128,8 +128,7 @@ void App_clickers_send_data_process( void )
 		else
 		{
 			uint8_t power_status = get_power_status();
-			if(rf_rev_result != -1)
-				yyk_pro_list[current_protocol]->check_rssi_print(
+			yyk_pro_list[current_protocol]->check_rssi_print(
 					yyk_pro_list[current_protocol],spi_message,rf_rev_result);
 			set_spi_rf_rev_status(0);
 			rf_rev_result = 0;
