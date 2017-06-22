@@ -191,7 +191,7 @@ void serial_cmd_find_card(const cJSON *object)
 	{
 		b_print("  \"fun\": \"bind_stop\",\r\n");
 	}
-
+  b_print("  \"device_type\": \"YYK\",\r\n");
 	b_print("  \"result\": \"0\"\r\n");
 	b_print("}\r\n");
 }
