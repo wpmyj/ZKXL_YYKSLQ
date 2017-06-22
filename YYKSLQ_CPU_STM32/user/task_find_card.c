@@ -226,7 +226,7 @@ void App_card_process(void)
 		#else
 		set_spi_rf_rev_status(1);
 		#endif
-		rf_set_card_status(1);
+		rf_set_card_status(0);
 		memset(rpdata,0x00,sizeof(rf_id_typedf));
 		memset(wpdata,0x00,sizeof(rf_id_typedf));
 		if( wl.weite_std_id_status == ON )
@@ -234,7 +234,6 @@ void App_card_process(void)
 			memset(wID.stdid,0x00,10);
 			wl.weite_std_id_status = OFF;
 			wl.match_status = OFF;
-			rf_set_card_status(0);
 		}
 		find_card_ok = 1;
 		#ifdef SHOW_CARD_PROCESS_TIME

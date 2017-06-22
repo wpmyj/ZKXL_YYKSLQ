@@ -370,6 +370,9 @@ void sync_power_check(void)
 	io_s[r_index] = (NRF2_SPI_IRQ_PORT->IDR & NRF2_SPI_IRQ_PIN) ? 1 : 0;
 	r_index = (r_index + 1) % 3;
 	power_on_flag = (io_s[r_index] + io_s[(r_index+3-1)%3] + io_s[(r_index+3-2)%3])/3;
+	if(  power_on_flag == 0 )
+		rf_set_card_status(1);
+		
 }
 
 uint8_t get_power_status(void)

@@ -135,11 +135,10 @@ void App_clickers_send_data_process( void )
 			flash_count   = 0;
 			ledOff(LRED);
 			ledOff(LBLUE);
-			if(power_status == 0)
+			if( power_status == 0 )
 			{
 				set_spi_rf_rev_status(0);
 			}
-			rf_set_card_status(1);
 		}
 		return;
 	}
