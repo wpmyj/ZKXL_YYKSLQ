@@ -12,7 +12,7 @@ extern uint8_t current_protocol;
 extern uint8_t g_uid_len;
 extern uint8_t show_log_flag;
 static uint8_t rf_rev_status = 0, flash_count = 0;
-static int16_t rf_rev_result = 0;
+static int16_t rf_rev_result = -1;
 static uint8_t spi_message[255];
 static uint8_t beep_open_flag = 0;
 	
@@ -85,21 +85,20 @@ void App_clickers_send_data_process( void )
 					uint8_t mon_index   = mon_index_h * 10 + mon_index_l - 1;
 					uint8_t mon         = mon_index / 3 + 1;
 					uint8_t date        = mon_index % 3;
-					b_print("{\"fun\":\"debug\",\"rssi\":\"-%d\", \
-					          \"uid\":\"%02x%02x%02x%02x%02x\",   \
-					          \"data\":\"%02x %02x %02x\"}\r\n",
+					printf("{\"fun\":\"debug\",\"rssi\":\"-%d\",\"uid\":\"%02x%02x%02x%02x%02x\",\"data\":\"%02x %02x %02x\"}\r\n",
 									  spi_message[0],spi_message[4],spi_message[5],
 					          spi_message[6],spi_message[7],spi_message[8],
 					          spi_message[1],spi_message[2],spi_message[3]);
 				}
 			}
 			result = yyk_pro_list[current_protocol]->check_rssi(yyk_pro_list[current_protocol],spi_message);
+
 			if( result == 0 )
 			{
-				set_spi_rf_rev_status(3);
-				rf_rev_result = 0;
+				yyk_pro_list[current_protocol]->check_rssi_print(
+					yyk_pro_list[current_protocol],spi_message,result);
 			}
-			else
+
 			{
 				rf_rev_result = -1;
 			}
@@ -128,8 +127,8 @@ void App_clickers_send_data_process( void )
 		else
 		{
 			uint8_t power_status = get_power_status();
-			yyk_pro_list[current_protocol]->check_rssi_print(
-					yyk_pro_list[current_protocol],spi_message,rf_rev_result);
+//			yyk_pro_list[current_protocol]->check_rssi_print(
+//					yyk_pro_list[current_protocol],spi_message,rf_rev_result);
 			set_spi_rf_rev_status(0);
 			rf_rev_result = 0;
 			flash_count   = 0;
@@ -155,7 +154,7 @@ void beep_callback(void)
 
 void spi_rev_timer_init(void)
 {
-	sw_create_timer(&rf_3000_timer , 3000, 2, 3,&(rf_rev_status), NULL);
+	sw_create_timer(&rf_3000_timer , 10000, 2, 3,&(rf_rev_status), NULL);
 	sw_create_timer(&rf_300_timer ,  100,  5, 6,&(rf_rev_status), NULL);
 	sw_create_timer(&beep_ok_timer , 100,  1, 0,&(beep_open_flag),beep_callback);
 	sw_create_timer(&beep_fail_timer,600,  2, 0,&(beep_open_flag),beep_callback);
